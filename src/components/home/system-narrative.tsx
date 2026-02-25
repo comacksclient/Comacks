@@ -4,7 +4,7 @@ import React, { useRef } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { Magnet, Zap, Workflow, RefreshCw, BarChart3, CheckCircle2 } from "lucide-react";
 
-// --- DATA ---
+
 const STEPS = [
     {
         id: "01",
@@ -128,7 +128,6 @@ function TimelineItem({ item, index, isLast }: { item: typeof STEPS[0], index: n
             </div>
 
             {/* --- CONNECTOR LINE (Horizontal) --- */}
-            {/* Desktop Connector */}
             <div className={`hidden md:block absolute top-1/2 w-[calc(50%-2rem)] h-px bg-gradient-to-r from-white/10 to-transparent ${isEven ? "right-1/2 origin-right" : "left-1/2 origin-left"}`} />
 
             {/* Mobile Connector */}
@@ -136,7 +135,6 @@ function TimelineItem({ item, index, isLast }: { item: typeof STEPS[0], index: n
 
 
             {/* --- CONTENT CARD --- */}
-            {/* Note: pl-20 on mobile pushes content right of the timeline */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -150,7 +148,8 @@ function TimelineItem({ item, index, isLast }: { item: typeof STEPS[0], index: n
                     <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-white/5 border border-white/10 text-white shadow-inner">
                         {item.icon}
                     </div>
-                    <span className="text-4xl font-mono font-bold text-white/5 tracking-tighter select-none">
+                    {/* FIXED: Changed text-white/5 to text-zinc-800 for visibility and added group-hover */}
+                    <span className="text-4xl font-mono font-bold text-zinc-800 tracking-tighter select-none transition-colors duration-500 group-hover:text-red-500/20">
                         {item.id}
                     </span>
                 </div>
@@ -163,7 +162,7 @@ function TimelineItem({ item, index, isLast }: { item: typeof STEPS[0], index: n
                     {item.desc}
                 </p>
 
-                {/* Decorative corner bracket to make it look 'technical' */}
+                {/* Decorative corner bracket */}
                 <div className={`absolute top-0 w-8 h-8 border-t border-white/10 ${isEven ? "md:right-0 md:border-r rounded-tr-xl" : "md:left-0 md:border-l rounded-tl-xl"} hidden md:block`} />
 
             </motion.div>

@@ -125,36 +125,43 @@ function SystemCard({ module, index }: { module: any, index: number }) {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
-            className={`group relative flex flex-col justify-between p-8 rounded-2xl bg-[#0A0A0A] border border-white/10 overflow-hidden hover:border-red-500/30 transition-all duration-500 ${module.colSpan}`}
+            className={`group relative flex flex-col justify-between p-8 rounded-2xl bg-[#080808] border border-white/5 overflow-hidden hover:border-red-500/30 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_10px_40px_-10px_rgba(239,68,68,0.15)] ${module.colSpan}`}
         >
+            {/* Background Texture on Hover */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(239,68,68,0.05),transparent_50%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#ef444405_1px,transparent_1px),linear-gradient(to_bottom,#ef444405_1px,transparent_1px)] bg-[size:1rem_1rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+
             {/* Hover Gradient Effect (Red Tone) */}
-            <div className="absolute inset-0 bg-gradient-to-b from-red-500/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-red-500/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+            {/* Top Shine */}
+            <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-red-500/0 to-transparent group-hover:via-red-500/50 transition-all duration-700 opacity-0 group-hover:opacity-100" />
 
             {/* Header: Icon + ID + Status */}
             <div className="relative z-10 flex items-start justify-between mb-8">
-                <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-400 group-hover:text-white group-hover:border-red-500/20 group-hover:shadow-[0_0_15px_rgba(239,68,68,0.2)] transition-all duration-300">
+                <div className="w-12 h-12 rounded-xl bg-zinc-900/80 border border-white/5 flex items-center justify-center text-zinc-400 group-hover:text-white group-hover:border-red-500/30 group-hover:shadow-[0_0_20px_rgba(239,68,68,0.2)] group-hover:bg-red-500/5 transition-all duration-300">
                     {module.icon}
                 </div>
                 <div className="flex flex-col items-end">
-                    <span className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mb-1 group-hover:text-red-500/50 transition-colors">
+                    <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-2 group-hover:text-red-400/80 transition-colors">
                         {module.id}
                     </span>
-                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 border border-white/5">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/5 backdrop-blur-sm group-hover:border-red-500/20 group-hover:bg-red-500/5 transition-colors">
                         <div className="relative w-1.5 h-1.5">
                             <div className="absolute inset-0 bg-red-500 rounded-full animate-ping opacity-75"></div>
-                            <div className="relative w-1.5 h-1.5 bg-red-500 rounded-full"></div>
+                            <div className="relative w-1.5 h-1.5 bg-red-500 rounded-full group-hover:shadow-[0_0_8px_rgba(239,68,68,1)] transition-shadow"></div>
                         </div>
-                        <span className="text-[9px] font-medium text-zinc-400 uppercase tracking-wider">{module.status}</span>
+                        <span className="text-[9px] font-medium text-zinc-300 uppercase tracking-wider">{module.status}</span>
                     </div>
                 </div>
             </div>
 
             {/* Content */}
-            <div className="relative z-10 mb-8">
-                <h3 className="text-xl font-medium text-white mb-3 group-hover:text-red-50 transition-colors">
+            <div className="relative z-10 mb-8 flex-grow">
+                <h3 className="text-xl md:text-2xl font-medium text-zinc-100 mb-3 group-hover:text-white transition-colors">
                     {module.title}
                 </h3>
-                <p className="text-sm text-zinc-400 font-light leading-relaxed">
+                <p className="text-sm text-zinc-500 font-light leading-relaxed group-hover:text-zinc-300 transition-colors">
                     {module.description}
                 </p>
             </div>
@@ -162,7 +169,7 @@ function SystemCard({ module, index }: { module: any, index: number }) {
             {/* Footer: Tech Tags */}
             <div className="relative z-10 pt-6 border-t border-white/5 flex flex-wrap gap-2 mt-auto">
                 {module.tags.map((tag: string) => (
-                    <span key={tag} className="text-[10px] font-mono text-zinc-500 bg-zinc-900/50 px-2 py-1 rounded border border-white/5 group-hover:border-red-500/10 group-hover:text-zinc-400 transition-colors">
+                    <span key={tag} className="text-[10px] font-mono text-zinc-500 bg-[#0A0A0A] px-2.5 py-1.5 rounded-md border border-white/[0.05] group-hover:border-red-500/20 group-hover:text-zinc-300 group-hover:bg-red-500/[0.02] transition-colors duration-300">
                         {tag}
                     </span>
                 ))}
