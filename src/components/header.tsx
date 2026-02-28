@@ -44,9 +44,7 @@ export function Header() {
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2 group">
               {/* Decorative vertical line */}
-              <div className="flex items-center gap-1">
-                <div className="h-6 w-px mx-2 hidden sm:block bg-white/10"></div>
-              </div>
+
 
               <span className="text-sm font-bold tracking-[0.2em] uppercase text-white block">
                 <span className="text-red-500">C</span>oma<span className="text-red-500">c</span>ks

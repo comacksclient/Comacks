@@ -138,35 +138,37 @@ function ProblemCard({ item }: { item: typeof DIAGNOSIS_ITEMS[0] }) {
     return (
         <motion.div
 
-            className={`group relative flex flex-col justify-between p-8 rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] transition-colors duration-500 ${item.colSpan}`}
+            className={`group relative flex flex-col justify-between h-full p-8 rounded-3xl border border-white/5 bg-gradient-to-b from-white/[0.03] to-transparent hover:from-white/[0.05] hover:to-white/[0.01] transition-all duration-500 overflow-hidden ${item.colSpan}`}
         >
             {/* Hover Gradient Border Effect */}
-            <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-transparent group-hover:ring-white/10 transition-all duration-500" />
+            <div className="absolute inset-0 rounded-3xl ring-1 ring-inset ring-transparent group-hover:ring-white/10 transition-all duration-500" />
 
-            <div>
-                <div className="flex items-start justify-between mb-6">
-                    <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-400 group-hover:text-white group-hover:border-white/20 transition-all duration-300 shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+            {/* Subtle Top Glow inside card */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+            <div className="flex-1">
+                <div className="flex items-start justify-between mb-8">
+                    <div className="w-12 h-12 rounded-xl bg-zinc-900/50 border border-white/10 flex items-center justify-center text-zinc-400 group-hover:text-white group-hover:border-white/20 group-hover:bg-zinc-800 transition-all duration-300 shadow-[0_0_15px_rgba(0,0,0,0.2)] group-hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]">
                         {item.icon}
                     </div>
-                    <span className="text-[10px] font-bold tracking-wider uppercase text-red-500/80 bg-red-500/10 px-2 py-1 rounded border border-red-500/10">
+                    <span className="text-[10px] font-bold tracking-wider uppercase text-red-400 bg-red-500/10 px-3 py-1.5 rounded-full border border-red-500/10 backdrop-blur-sm">
                         {item.highlight}
                     </span>
                 </div>
 
-                <h3 className="text-xl font-medium text-white mb-3 group-hover:text-red-100 transition-colors">
+                <h3 className="text-xl md:text-2xl font-medium text-white mb-3 group-hover:text-zinc-100 transition-colors">
                     {item.title}
                 </h3>
-                <p className="text-sm text-zinc-400 leading-relaxed font-light group-hover:text-zinc-300 transition-colors">
+                <p className="text-sm md:text-base text-zinc-400 leading-relaxed font-light group-hover:text-zinc-300 transition-colors">
                     {item.description}
                 </p>
             </div>
 
             {/* Decorative 'Fix' Arrow that appears on hover */}
-            <div className="mt-8 flex items-center gap-2 text-xs font-medium text-white/0 group-hover:text-red-400 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
+            <div className="mt-8 flex items-center gap-2 text-xs font-semibold text-white/0 group-hover:text-red-400 transition-all duration-500 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100">
                 <span>System Fix Available</span>
-                <ArrowRight className="w-3 h-3" />
+                <ArrowRight className="w-4 h-4" />
             </div>
-
         </motion.div>
     );
 }

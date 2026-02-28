@@ -53,7 +53,9 @@ export function Hero() {
           </h1>
 
           <p className="text-sm md:text-lg text-zinc-400 font-light max-w-2xl mb-10 leading-relaxed pointer-events-auto">
-            <span className="text-white">Not marketing. Not tools. A system that stops revenue leakage.</span>
+            <span >AI Powered Systems That Attract, Convert, and Retain Patients,</span>
+            <br />
+            <span >While You Focus on Care.</span>
           </p>
 
           {/* Buttons */}
