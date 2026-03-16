@@ -64,7 +64,7 @@ export function SampleReport() {
             <motion.div
               animate={{ y: [-5, 5, -5], rotateY: [-2, 2, -2] }}
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-              className="relative max-w-sm mx-auto w-full aspect-[1/1.4] transform-style-3d"
+              className="relative max-w-sm mx-auto w-full aspect-[1/1.4] transform-style-3d scale-[0.8] xs:scale-[0.9] sm:scale-100"
             >
 
               {/* BACKGROUND DOCUMENT (Gives a stacked dossier look) */}

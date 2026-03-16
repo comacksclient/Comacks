@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { calculateDiagnosis, COUNTRY_CONFIGS, DiagnosisInput, GLOBAL_TARGETS } from "@/lib/diagnosisEngine";
-import { Lock, FileText, ArrowRight, Share2, Calendar, PhoneMissed, Handshake, Stethoscope, Rewind, Terminal, Activity, AlertTriangle, ShieldCheck, Cpu, Zap, MoveDown, MoveUp, ScanLine } from "lucide-react";
+import { Lock, FileText, ArrowRight, X, Calendar, PhoneMissed, Handshake, Stethoscope, Rewind, Terminal, Activity, AlertTriangle, ShieldCheck, Cpu, Zap, MoveDown, MoveUp, ScanLine } from "lucide-react";
 import Link from "next/link";
 
 export default function ResultDashboard() {
@@ -17,6 +17,7 @@ export default function ResultDashboard() {
   const [form, setForm] = useState({ name: '', phone: '', clinic_name: '', city: '', email: '' });
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showUnlockModal, setShowUnlockModal] = useState(false);
 
   useEffect(() => {
     const raw = localStorage.getItem('comacks_diagnosis_data');
@@ -56,12 +57,19 @@ export default function ResultDashboard() {
       const data = await res.json();
       if (data.success) {
         setIsUnlocked(true);
-        setReportId(data.savedId || reportId);
+        const newId = data.savedId || reportId;
+        setReportId(newId);
+        setShowUnlockModal(false);
+        router.push(`/report?id=${newId}`);
       }
     } catch (error) {
       console.error(error);
       // Fallback for UI demonstration if API fails
-      setTimeout(() => setIsUnlocked(true), 1000);
+      setTimeout(() => {
+        setIsUnlocked(true);
+        setShowUnlockModal(false);
+        router.push(`/report?id=${reportId}`);
+      }, 1000);
     }
     setIsSubmitting(false);
   };
@@ -91,12 +99,21 @@ export default function ResultDashboard() {
               </span>
             </div>
             <h1 className="text-3xl md:text-5xl font-medium tracking-tighter">
-              Practice <span className="text-zinc-600">Analysis.</span>
+              Clinic <span className="text-zinc-600">Analysis.</span>
             </h1>
           </div>
-          <div className="text-right">
-            <div className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold mb-1">Report ID</div>
-            <div className="font-mono text-zinc-300 bg-white/5 px-3 py-1 rounded-md border border-white/10">{reportId}</div>
+          <div className="flex flex-col items-end gap-3">
+            <div className="text-right flex flex-col items-end">
+              <div className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold mb-1">Report ID</div>
+              <div className="font-mono text-zinc-300 bg-white/5 px-3 py-1 rounded-md border border-white/10">{reportId}</div>
+            </div>
+            <button
+              onClick={() => isUnlocked ? window.open(`/report?id=${reportId}`, '_blank') : setShowUnlockModal(true)}
+              className="px-4 py-2 mt-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-[10px] tracking-widest uppercase font-bold flex items-center gap-2 transition-colors shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              {isUnlocked ? "View PDF Report" : "Download PDF Report"}
+            </button>
           </div>
         </motion.div>
 
@@ -110,7 +127,7 @@ export default function ResultDashboard() {
               <Activity className="w-4 h-4" /> Practice Performance Score
             </h2>
 
-            <div className={`text-6xl md:text-8xl font-medium tracking-tighter ${scoreColor} mb-2`}>
+            <div className={`text-5xl sm:text-7xl md:text-8xl font-medium tracking-tighter ${scoreColor} mb-2`}>
               {result.score}
             </div>
 
@@ -192,7 +209,7 @@ export default function ResultDashboard() {
         {/* --- REVENUE LEAK DETECTION --- */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="space-y-4">
           <h2 className="text-[10px] font-bold text-red-500 uppercase tracking-widest flex items-center gap-2 mb-4">
-              <AlertTriangle className="w-4 h-4" /> Growth Gap Analysis
+            <AlertTriangle className="w-4 h-4" /> Growth Gap Analysis
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
@@ -229,24 +246,32 @@ export default function ResultDashboard() {
 
           <div className="space-y-8 relative z-10">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-[#0A0A0A] border border-white/5 p-6 rounded-xl">
+              <div className="bg-[#0A0A0A] border border-white/5 p-4 sm:p-6 rounded-xl">
                 <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-2">Monthly Growth Potential</div>
-                <div className="text-2xl lg:text-3xl font-mono text-emerald-400 whitespace-nowrap">
+                <div className="text-xl xs:text-2xl lg:text-3xl font-mono text-emerald-400 break-words">
                   {result.revenue.recoveryMin === 0 ? (
                     `Up to ${currency}${Math.round(result.revenue.recoveryMax).toLocaleString()}`
                   ) : (
-                    `${currency}${Math.round(result.revenue.recoveryMin).toLocaleString()} – ${currency}${Math.round(result.revenue.recoveryMax).toLocaleString()}`
+                    <div className="flex flex-wrap items-baseline gap-x-2">
+                      <span>{currency}{Math.round(result.revenue.recoveryMin).toLocaleString()}</span>
+                      <span className="text-zinc-600 font-sans text-xs">to</span>
+                      <span>{currency}{Math.round(result.revenue.recoveryMax).toLocaleString()}</span>
+                    </div>
                   )}
                 </div>
               </div>
 
-              <div className="bg-[#0A0A0A] border border-white/5 p-6 rounded-xl">
+              <div className="bg-[#0A0A0A] border border-white/5 p-4 sm:p-6 rounded-xl">
                 <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-2">Annual Growth Potential</div>
-                <div className="text-2xl lg:text-3xl font-mono text-emerald-400 whitespace-nowrap">
+                <div className="text-xl xs:text-2xl lg:text-3xl font-mono text-emerald-400 break-words">
                   {result.revenue.recoveryMin === 0 ? (
                     `Up to ${currency}${Math.round(result.revenue.recoveryMax * 12).toLocaleString()}`
                   ) : (
-                    `${currency}${Math.round(result.revenue.recoveryMin * 12).toLocaleString()} – ${currency}${Math.round(result.revenue.recoveryMax * 12).toLocaleString()}`
+                    <div className="flex flex-wrap items-baseline gap-x-2">
+                      <span>{currency}{Math.round(result.revenue.recoveryMin * 12).toLocaleString()}</span>
+                      <span className="text-zinc-600 font-sans text-xs">to</span>
+                      <span>{currency}{Math.round(result.revenue.recoveryMax * 12).toLocaleString()}</span>
+                    </div>
                   )}
                 </div>
               </div>
@@ -254,81 +279,95 @@ export default function ResultDashboard() {
           </div>
         </motion.div>
 
-        {/* --- DECRYPTION PORTAL (Unlock Form) --- */}
-        {!isUnlocked ? (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="bg-[#080808]/90 border border-red-500/20 p-8 md:p-12 rounded-3xl relative overflow-hidden backdrop-blur-xl mt-12">
-            <div className="absolute top-1/2 right-10 -translate-y-1/2 opacity-[0.02] pointer-events-none"><Lock className="w-96 h-96" /></div>
+        {/* --- ACTION BUTTONS --- */}
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col md:flex-row gap-4 items-center justify-center p-8 md:p-12 border border-white/10 rounded-3xl bg-[#080808]/90 backdrop-blur-xl mt-12 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_0,transparent_50%)]" />
 
-            <div className="relative z-10 max-w-2xl">
-              <div className="inline-flex items-center gap-2 mb-6 px-3 py-1 rounded-full border border-red-500/20 bg-red-500/10 backdrop-blur-md">
-                <Lock className="w-3.5 h-3.5 text-red-500" />
-                <span className="text-[10px] uppercase tracking-[0.2em] text-red-400 font-bold">Practice Health Report</span>
-              </div>
-              <h2 className="text-3xl md:text-4xl font-medium text-white mb-4 tracking-tighter">Access Full Growth Report.</h2>
-              <p className="text-zinc-400 mb-10 text-sm leading-relaxed font-light">
-                The Comacks system has designed a 6-page growth plan for your clinic. Enter your details below to access the report via secure email.
-              </p>
-
-              <form onSubmit={handleUnlock} className="space-y-5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div>
-                    <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Full Name</label>
-                    <input required type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full bg-[#111] border border-white/5 hover:border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-red-500/50 transition-all font-mono text-sm" />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Phone Number</label>
-                    <input required type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="w-full bg-[#111] border border-white/5 hover:border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-red-500/50 transition-all font-mono text-sm" />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div>
-                    <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Clinic Name</label>
-                    <input required type="text" value={form.clinic_name} onChange={(e) => setForm({ ...form, clinic_name: e.target.value })} className="w-full bg-[#111] border border-white/5 hover:border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-red-500/50 transition-all font-mono text-sm" />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">City</label>
-                    <input required type="text" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="w-full bg-[#111] border border-white/5 hover:border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-red-500/50 transition-all font-mono text-sm" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Email Address (Optional)</label>
-                  <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full bg-[#111] border border-white/5 hover:border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-red-500/50 transition-all font-mono text-sm" />
-                </div>
-
-                <button disabled={isSubmitting} type="submit" className="w-full mt-8 group relative h-14 rounded-lg bg-white text-black hover:bg-zinc-200 transition-all duration-300 flex items-center justify-center gap-3 text-xs tracking-[0.2em] uppercase font-bold disabled:opacity-50 overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                  <span className="z-10 relative">{isSubmitting ? "Preparing Report..." : "Access & Download Report"}</span>
-                  {!isSubmitting && <ArrowRight className="w-4 h-4 z-10 relative group-hover:translate-x-1 transition-transform" />}
-                  <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-black/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] skew-x-12 z-0"></div>
-                </button>
-              </form>
-            </div>
-          </motion.div>
-        ) : (
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col md:flex-row gap-4 items-center justify-center p-8 md:p-12 border border-white/10 rounded-3xl bg-[#080808]/90 backdrop-blur-xl mt-12 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_0,transparent_50%)]" />
-
-            <Link href="/contact" className="w-full md:w-auto relative z-10">
-              <button className="w-full px-8 py-4 rounded-xl bg-red-600 border border-red-500 text-white text-xs tracking-[0.1em] uppercase font-bold flex items-center justify-center gap-3 hover:bg-red-700 transition-colors shadow-[0_0_30px_rgba(239,68,68,0.3)]">
-                <PhoneMissed className="w-4 h-4" /> Contact Architect
-              </button>
-            </Link>
-            <Link target="_blank" href={`/report?id=${reportId}`} className="w-full md:w-auto relative z-10">
-              <button className="w-full px-8 py-4 rounded-xl bg-[#111] border border-white/10 text-white text-xs tracking-[0.1em] uppercase font-bold flex items-center justify-center gap-3 hover:bg-white/5 transition-colors relative z-10">
-                <FileText className="w-4 h-4" /> View PDF Report
-              </button>
-            </Link>
-            <button onClick={() => window.open('https://calendly.com/03arpit04', '_blank')} className="w-full md:w-auto px-8 py-4 rounded-xl bg-transparent border border-white/10 text-zinc-400 hover:text-white text-xs tracking-[0.1em] uppercase font-bold flex items-center justify-center gap-3 hover:bg-white/5 transition-colors relative z-10">
-              <Calendar className="w-4 h-4" /> Initialize Strategy Call
+          <Link href="/contact" className="w-full md:w-auto relative z-10">
+            <button className="w-full px-8 py-4 rounded-xl bg-red-600 border border-red-500 text-white text-xs tracking-[0.1em] uppercase font-bold flex items-center justify-center gap-3 hover:bg-red-700 transition-colors shadow-[0_0_30px_rgba(239,68,68,0.3)]">
+              <PhoneMissed className="w-4 h-4" /> Contact
             </button>
-
-          </motion.div>
-        )}
+          </Link>
+          <button onClick={() => isUnlocked ? window.open(`/report?id=${reportId}`, '_blank') : setShowUnlockModal(true)} className="w-full md:w-auto px-8 py-4 rounded-xl bg-[#111] border border-white/10 text-white text-xs tracking-[0.1em] uppercase font-bold flex items-center justify-center gap-3 hover:bg-white/5 transition-colors relative z-10">
+            <FileText className="w-4 h-4" /> {isUnlocked ? "View PDF Report" : "Download PDF Report"}
+          </button>
+          <button onClick={() => window.open('https://calendly.com/03arpit04', '_blank')} className="w-full md:w-auto px-8 py-4 rounded-xl bg-transparent border border-white/10 text-zinc-400 hover:text-white text-xs tracking-[0.1em] uppercase font-bold flex items-center justify-center gap-3 hover:bg-white/5 transition-colors relative z-10">
+            <Calendar className="w-4 h-4" /> Schedule a Call
+          </button>
+        </motion.div>
 
         <div className="mt-8 text-center text-[10px] uppercase tracking-[0.3em] text-zinc-600 font-bold">
           Contact: <a href="mailto:arpit@comacks.com" className="text-zinc-400 hover:text-red-500 transition-colors">arpit@comacks.com</a>
         </div>
 
       </div>
+
+      {/* --- UNLOCK MODAL --- */}
+      {showUnlockModal && !isUnlocked && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => setShowUnlockModal(false)}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="bg-[#0A0A0A] border border-red-500/30 p-8 md:p-10 rounded-2xl relative w-full max-w-2xl shadow-[0_0_50px_rgba(239,68,68,0.1)] z-10 max-h-[90vh] overflow-y-auto"
+          >
+            <button
+              onClick={() => setShowUnlockModal(false)}
+              className="absolute top-6 right-6 text-zinc-500 hover:text-white transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full border border-red-500/20 bg-red-500/10">
+              <Lock className="w-3.5 h-3.5 text-red-500" />
+              <span className="text-[10px] uppercase tracking-[0.2em] text-red-400 font-bold">Secure Access</span>
+            </div>
+            <h2 className="text-2xl md:text-3xl font-medium text-white mb-3 tracking-tighter">Access Full Growth Report.</h2>
+            <p className="text-zinc-400 mb-8 text-sm leading-relaxed font-light">
+              The Comacks system has designed a 6-page growth plan for your clinic. Enter your details below to access the full PDF dossier.
+            </p>
+
+            <form onSubmit={handleUnlock} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1.5">Full Name</label>
+                  <input required type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full bg-[#111] border border-white/5 hover:border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-red-500/50 transition-all font-mono text-sm" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1.5">Phone Number</label>
+                  <input required type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="w-full bg-[#111] border border-white/5 hover:border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-red-500/50 transition-all font-mono text-sm" />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1.5">Clinic Name</label>
+                  <input required type="text" value={form.clinic_name} onChange={(e) => setForm({ ...form, clinic_name: e.target.value })} className="w-full bg-[#111] border border-white/5 hover:border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-red-500/50 transition-all font-mono text-sm" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1.5">City</label>
+                  <input required type="text" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="w-full bg-[#111] border border-white/5 hover:border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-red-500/50 transition-all font-mono text-sm" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1.5">Email Address (Optional)</label>
+                <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full bg-[#111] border border-white/5 hover:border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-red-500/50 transition-all font-mono text-sm" />
+              </div>
+
+              <button disabled={isSubmitting} type="submit" className="w-full mt-4 group relative h-12 rounded-lg bg-white text-black hover:bg-zinc-200 transition-all duration-300 flex items-center justify-center gap-3 text-xs tracking-[0.2em] uppercase font-bold disabled:opacity-50 overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                <span className="z-10 relative">{isSubmitting ? "Generating..." : "Unlock PDF"}</span>
+                {!isSubmitting && <FileText className="w-4 h-4 z-10 relative" />}
+                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-black/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] skew-x-12 z-0"></div>
+              </button>
+            </form>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

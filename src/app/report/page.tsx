@@ -78,11 +78,11 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
 
   // System recommendations (Simplified)
   const systems = [];
-  if (computedResult.rates.consultRate < GLOBAL_TARGETS.consultTarget.min) systems.push({ name: "Inquiry System", desc: "Missed inquiries detected. Call tracking, AI follow-up, and website conversion fixes required." });
-  if (computedResult.rates.treatmentRate < GLOBAL_TARGETS.treatmentTarget.min) systems.push({ name: "Conversion System", desc: "Consultations are dropping. CRM tracking and automated patient education recommended." });
-  if (computedResult.rates.completionRate < GLOBAL_TARGETS.completionTarget.min) systems.push({ name: "Completion System", desc: "Treatment abandonment detected. Reminder systems and financial integrations needed." });
-  if (computedResult.rates.recallRate < GLOBAL_TARGETS.recallTarget.min) systems.push({ name: "Recall System", desc: "Low returning patients. Automated recall via SMS/Email required." });
-  systems.push({ name: "Analytics Dashboard", desc: "Real-time foundational dashboard to track pipeline health." });
+  if (computedResult.rates.consultRate < GLOBAL_TARGETS.consultTarget.min) systems.push({ name: "Patient Attraction", desc: "High inquiry drop-off detected. Implementation of AI-assisted booking and optimized staff follow-up protocols recommended." });
+  if (computedResult.rates.treatmentRate < GLOBAL_TARGETS.treatmentTarget.min) systems.push({ name: "Case Acceptance", desc: "Consultation-to-treatment conversions are below target. Patient education frameworks and structured communication protocols needed." });
+  if (computedResult.rates.completionRate < GLOBAL_TARGETS.completionTarget.min) systems.push({ name: "Treatment Adherence", desc: "Patient dropout during active treatment detected. Automated adherence sequences and flexible financial integrations required." });
+  if (computedResult.rates.recallRate < GLOBAL_TARGETS.recallTarget.min) systems.push({ name: "Patient Reactivation", desc: "Significant loss of past patients. Implementation of automated, personalized recall campaigns via SMS and Email recommended." });
+  systems.push({ name: "Practice Command Center", desc: "Real-time foundational dashboard to track overall practice health and patient flow metrics." });
 
   return (
     <div className="min-h-screen bg-[#050505] text-zinc-200 font-sans pb-20 selection:bg-red-900/30">
@@ -97,10 +97,10 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
           </div>
           <div className="flex items-center gap-2">
             <Terminal className="w-4 h-4 text-zinc-500 hidden sm:block" />
-            <span className="text-xs font-mono font-bold uppercase text-zinc-300 whitespace-nowrap">
+            <span className="text-[10px] font-mono font-bold uppercase text-zinc-300 whitespace-nowrap">
               <span className="inline-flex items-center">
                 <span className="text-red-500">C</span>oma<span className="text-red-500">c</span>ks OS
-              </span> // Secure Document Viewer
+              </span> // <span className="hidden xs:inline">Secure Document Viewer</span><span className="xs:hidden">Viewer</span>
             </span>
           </div>
         </div>
@@ -111,10 +111,10 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
       </div>
 
       {/* --- DOCUMENT CONTAINER --- */}
-      <div className="container mx-auto max-w-[210mm] bg-[#080808] border border-white/10 border-t-0 shadow-[0_0_80px_rgba(0,0,0,0.8)] p-0 print:m-0 print:border-none print:shadow-none print:w-full relative rounded-b-2xl print:bg-white print:text-black">
+      <div className="container mx-auto w-full max-w-[210mm] bg-[#080808] border border-white/10 border-t-0 shadow-[0_0_80px_rgba(0,0,0,0.8)] p-0 print:m-0 print:border-none print:shadow-none print:w-full relative rounded-b-2xl print:bg-white print:text-black">
 
         {/* PAGE 1: OVERVIEW */}
-        <div className="min-h-[297mm] p-16 flex flex-col relative page-break-after overflow-hidden print:p-12 print:border-b print:border-zinc-200">
+        <div className="min-h-[297mm] p-6 sm:p-12 md:p-16 flex flex-col relative page-break-after overflow-hidden print:p-12 print:border-b print:border-zinc-200">
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-900/10 blur-[150px] rounded-full mix-blend-screen pointer-events-none print:hidden"></div>
 
           <Header title="Practice Health Overview" clinic={user} />
@@ -125,18 +125,18 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
               <span className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 print:text-zinc-500 font-bold">Overall System Health</span>
             </div>
 
-            <div className={`w-64 h-64 rounded-full border-2 flex flex-col items-center justify-center mb-16 ${computedResult.score > 80 ? 'border-white/20 print:border-zinc-300' : 'border-red-500/30 bg-red-500/5 shadow-[0_0_50px_rgba(239,68,68,0.1)] print:bg-transparent print:shadow-none print:border-red-500/50'}`}>
-              <div className="text-8xl font-black text-white print:text-black tracking-tighter">{Math.round(computedResult.score)}</div>
-              <div className="text-xl font-mono text-zinc-500 mt-2">/ 100</div>
+            <div className={`w-48 h-48 sm:w-64 sm:h-64 rounded-full border-2 flex flex-col items-center justify-center mb-10 sm:16 ${computedResult.score > 80 ? 'border-white/20 print:border-zinc-300' : 'border-red-500/30 bg-red-500/5 shadow-[0_0_50px_rgba(239,68,68,0.1)] print:bg-transparent print:shadow-none print:border-red-500/50'}`}>
+              <div className="text-6xl sm:text-8xl font-black text-white print:text-black tracking-tighter">{Math.round(computedResult.score)}</div>
+              <div className="text-base sm:text-xl font-mono text-zinc-500 mt-2">/ 100</div>
             </div>
 
-            <div className="w-full bg-[#110505] p-10 rounded-2xl border border-red-500/20 relative overflow-hidden print:bg-zinc-50 print:border-red-500/30">
+            <div className="w-full bg-[#110505] p-6 sm:p-10 rounded-2xl border border-red-500/20 relative overflow-hidden print:bg-zinc-50 print:border-red-500/30">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(239,68,68,0.1)_0,transparent_60%)] print:hidden" />
               <h3 className="text-red-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-4 relative z-10 flex items-center justify-center gap-2">
                 <AlertTriangle className="w-4 h-4" /> Revenue Opportunity Detected
               </h3>
-              <div className="text-6xl font-mono font-black text-red-500 mb-4 relative z-10">{currency} {Math.round(computedResult.revenue.recoveryMax).toLocaleString()} <span className="text-2xl text-red-500/50">/mo</span></div>
-              <div className="text-red-400/80 font-mono text-sm relative z-10 bg-red-500/10 inline-block px-4 py-2 rounded-md border border-red-500/20 print:bg-red-50 print:border-red-100">Potential Annual Growth: {currency} {Math.round(computedResult.revenue.recoveryMax * 12).toLocaleString()}</div>
+              <div className="text-4xl sm:text-6xl font-mono font-black text-red-500 mb-4 relative z-10">{currency} {Math.round(computedResult.revenue.recoveryMax).toLocaleString()} <span className="text-xl sm:text-2xl text-red-500/50">/mo</span></div>
+              <div className="text-red-400/80 font-mono text-[10px] sm:text-sm relative z-10 bg-red-500/10 inline-block px-4 py-2 rounded-md border border-red-500/20 print:bg-red-50 print:border-red-100 italic sm:not-italic">Potential Annual Growth: {currency} {Math.round(computedResult.revenue.recoveryMax * 12).toLocaleString()}</div>
             </div>
           </div>
 
@@ -144,8 +144,8 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
         </div>
 
         {/* PAGE 2: PIPELINE */}
-        <div className="min-h-[297mm] p-16 flex flex-col relative page-break-after border-t border-white/10 print:border-zinc-200 print:p-12">
-          <Header title="Patient Growth Journey" clinic={user} />
+        <div className="h-[296.8mm] p-6 sm:p-12 md:p-16 flex flex-col relative page-break-after border-t border-white/10 print:border-zinc-200 print:p-12 overflow-hidden">
+          <Header title="Patient Flow Analysis" clinic={user} />
 
           <div className="flex-1 flex flex-col justify-center mt-12">
             <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-12 text-center">Patient Flow Analysis</h2>
@@ -172,7 +172,7 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
         </div>
 
         {/* PAGE 3: LEAK ANALYSIS */}
-        <div className="min-h-[297mm] p-16 flex flex-col relative page-break-after border-t border-white/10 print:border-zinc-200 print:p-12">
+        <div className="min-h-[297mm] p-6 sm:p-12 md:p-16 flex flex-col relative page-break-after border-t border-white/10 print:border-zinc-200 print:p-12">
           <Header title="Growth Opportunities" clinic={user} />
 
           <div className="flex-1 flex flex-col justify-center gap-6 mt-12">
@@ -212,7 +212,7 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
         </div>
 
         {/* PAGE 4: BENCHMARK */}
-        <div className="min-h-[297mm] p-16 flex flex-col relative page-break-after border-t border-white/10 print:border-zinc-200 print:p-12">
+        <div className="min-h-[297mm] p-6 sm:p-12 md:p-16 flex flex-col relative page-break-after border-t border-white/10 print:border-zinc-200 print:p-12">
           <Header title="Growth Benchmarks" clinic={user} />
 
           <div className="flex-1 flex flex-col justify-center mt-12">
@@ -259,7 +259,7 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
         </div>
 
         {/* PAGE 5: REVENUE RECOVERY */}
-        <div className="min-h-[297mm] p-16 flex flex-col relative page-break-after border-t border-white/10 print:border-zinc-200 print:p-12">
+        <div className="min-h-[297mm] p-6 sm:p-12 md:p-16 flex flex-col relative page-break-after border-t border-white/10 print:border-zinc-200 print:p-12">
           <Header title="Revenue Growth Projections" clinic={user} />
 
           <div className="flex-1 flex flex-col items-center justify-center">
@@ -278,11 +278,11 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
                 <div className="text-3xl font-mono font-bold text-zinc-400 print:text-zinc-500">{currency} {computedResult.revenue.currentRevenue.toLocaleString()}</div>
               </div>
 
-              <div className="bg-white/5 border border-white/10 p-8 rounded-2xl flex flex-row justify-between items-center shadow-[0_0_30px_rgba(255,255,255,0.05)] print:bg-zinc-50 print:border-zinc-200 print:shadow-none print:rounded-lg gap-4">
+              <div className="bg-white/5 border border-white/10 p-6 sm:p-8 rounded-2xl flex flex-col sm:flex-row justify-between items-center shadow-[0_0_30px_rgba(255,255,255,0.05)] print:bg-zinc-50 print:border-zinc-200 print:shadow-none print:rounded-lg gap-4">
                 <div className="text-left shrink-0">
                   <h4 className="text-[10px] text-white print:text-zinc-800 uppercase tracking-widest font-bold mb-1">Future Output <span className="text-zinc-500 print:text-zinc-400 ml-2 font-light lowercase">Top Clinics Goal</span></h4>
                 </div>
-                <div className="text-2xl lg:text-3xl font-mono font-black text-white print:text-black whitespace-nowrap">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-mono font-black text-white print:text-black whitespace-nowrap">
                   {computedResult.revenue.recoveryMin === 0 ? (
                     `Up to ${currency} ${Math.round(computedResult.revenue.potentialRevenueMax).toLocaleString()}`
                   ) : (
@@ -294,12 +294,12 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
 
             <div className="w-full pt-10 border-t border-white/10 print:border-zinc-200 flex flex-col items-center">
               <h3 className="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em] mb-4">Total Growth Potential</h3>
-              <div className="text-2xl lg:text-4xl font-mono font-black text-white print:text-black mb-2 whitespace-nowrap">
+              <div className="text-xl sm:text-2xl lg:text-4xl font-mono font-black text-white print:text-black mb-2 whitespace-nowrap">
                 {computedResult.revenue.recoveryMin === 0 ? (
                   `+ Up to ${currency} ${Math.round(computedResult.revenue.recoveryMax).toLocaleString()}`
                 ) : (
                   `+${currency} ${Math.round(computedResult.revenue.recoveryMin).toLocaleString()} – ${currency} ${Math.round(computedResult.revenue.recoveryMax).toLocaleString()}`
-                )} <span className="text-xl text-zinc-600">/mo</span>
+                )} <span className="text-lg sm:text-xl text-zinc-600">/mo</span>
               </div>
               <div className="text-sm font-mono text-zinc-500 bg-[#111] px-4 py-2 rounded-md border border-white/5 mt-4 print:bg-zinc-50 print:border-zinc-100 whitespace-nowrap">
                 Yearly Projection: {computedResult.revenue.recoveryMin === 0 ? (
@@ -314,12 +314,12 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
         </div>
 
         {/* PAGE 6: SYSTEMS & IMPLEMENTATION */}
-        <div className="min-h-[297mm] p-16 flex flex-col relative border-t border-white/10 print:border-zinc-200 print:p-12">
-          <Header title="Implementation Strategy" clinic={user} />
+        <div className="min-h-[297mm] p-6 sm:p-12 md:p-16 flex flex-col relative border-t border-white/10 print:border-zinc-200 print:p-12">
+
 
           <div className="flex-1 flex flex-col justify-center gap-12 mt-12">
             <div>
-              <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-8">Recommended System Installs</h2>
+              <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-8">Recommended Practice Systems</h2>
               <div className="grid grid-cols-1 gap-3">
                 {systems.map((sys, idx) => (
                   <div key={idx} className="bg-[#111] p-5 rounded-xl border border-white/5 flex items-start gap-4 print:bg-white print:border-zinc-200 print:rounded-none">
@@ -409,7 +409,7 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
 
 function Header({ title, clinic }: { title: string; clinic: any }) {
   return (
-    <div className={`flex justify-between items-start border-b border-white/10 print:border-zinc-300 pb-6 print:pb-4 absolute top-16 left-16 right-16 z-20`}>
+    <div className={`flex justify-between items-start border-b border-white/10 print:border-zinc-300 pb-6 print:pb-4 absolute top-8 sm:top-16 left-6 sm:left-16 right-6 sm:right-16 z-20`}>
       <div>
         <h1 className="text-lg font-black text-white print:text-black flex items-center gap-2 tracking-tight">
           <Activity className="w-5 h-5 text-red-500" />
@@ -432,7 +432,7 @@ function Header({ title, clinic }: { title: string; clinic: any }) {
 
 function Footer({ page }: { page: number }) {
   return (
-    <div className={`flex justify-between items-center text-[10px] text-zinc-600 uppercase font-mono font-bold whitespace-nowrap absolute bottom-16 left-16 right-16 z-20 border-t border-white/5 print:border-zinc-100 pt-6`}>
+    <div className={`flex justify-between items-center text-[10px] text-zinc-600 uppercase font-mono font-bold whitespace-nowrap absolute bottom-8 sm:bottom-16 left-6 sm:left-16 right-6 sm:right-16 z-20 border-t border-white/5 print:border-zinc-100 pt-6`}>
       <span className="flex items-center gap-2 whitespace-nowrap">
         <Cpu className="w-3 h-3" />
         Comacks Group

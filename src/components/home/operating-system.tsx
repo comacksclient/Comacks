@@ -162,7 +162,7 @@ function SystemCard({ module, index }: { module: any, index: number }) {
                     {module.title}
                 </h3>
                 <p className="text-sm text-zinc-500 font-light leading-relaxed group-hover:text-zinc-300 transition-colors">
-                    {module.description}
+                    {module.desc}
                 </p>
             </div>
 
