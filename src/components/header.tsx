@@ -37,7 +37,7 @@ export function Header() {
 
           <div className="flex items-center gap-12">
             <Link href="/" className="flex items-center gap-2 group shrink-0">
-              <span className="text-sm font-bold tracking-[0.2em]  text-white block uppercase tracking-tightest word-spacing:-0.2em">
+              <span className="text-md font-black text-white block uppercase tracking-tighter">
                 <span className="text-red-500">C</span>oma<span className="text-red-500">c</span>ks
               </span>
             </Link>
@@ -70,10 +70,16 @@ export function Header() {
             {/* Primary CTA: Always Visible (Scales down on mobile) */}
             <Link
               href="/diagnosis"
-              className="px-4 md:px-6 py-2 md:py-2.5 rounded-full border border-red-500/20 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-300 text-[9px] md:text-[10px] font-bold tracking-widest uppercase backdrop-blur-sm shadow-[0_0_15px_rgba(239,68,68,0.1)] flex items-center gap-2"
+              className="group relative px-4 md:px-6 py-2 md:py-2.5 rounded-full border border-red-500/30 bg-red-500/10 text-red-400 hover:text-white hover:bg-red-600 hover:border-red-500 transition-all duration-300 text-[9px] md:text-[10px] font-bold tracking-widest uppercase backdrop-blur-sm shadow-[0_0_15px_rgba(239,68,68,0.15)] hover:shadow-[0_0_30px_rgba(239,68,68,0.4)] flex items-center gap-2 overflow-hidden"
             >
-              <Terminal className="w-3 h-3 hidden md:block" />
-              Run Diagnosis
+              {/* Icon - Pulses slightly on hover to simulate system activity */}
+              <Terminal className="w-3 h-3 hidden md:block relative z-10 group-hover:animate-pulse" />
+
+              {/* Text Layer */}
+              <span className="relative z-10">Run Diagnosis</span>
+
+              {/* Animated Hover Shimmer (Data Sweep) */}
+              <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] skew-x-12 z-0 pointer-events-none"></div>
             </Link>
 
             {/* MOBILE TOGGLE BUTTON */}
@@ -100,7 +106,7 @@ export function Header() {
           <div className="flex flex-col gap-6 relative z-10">
             <MobileLink href="/" label="Home" delay="100ms" onClick={() => setIsMenuOpen(false)} />
             <MobileLink href="/diagnosis" label="Clinic Diagnosis" delay="150ms" onClick={() => setIsMenuOpen(false)} />
-            <MobileLink href="/platform" label="Platform" delay="200ms" onClick={() => setIsMenuOpen(false)} />
+
             <MobileLink href="/systems" label="Systems" delay="250ms" onClick={() => setIsMenuOpen(false)} />
 
             <MobileLink href="/case-studies" label="Case Studies" delay="350ms" onClick={() => setIsMenuOpen(false)} />
