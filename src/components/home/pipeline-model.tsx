@@ -39,7 +39,7 @@ export function PipelineModel() {
           >
             <Terminal className="w-3.5 h-3.5 text-red-500" />
             <span className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 font-bold">
-              System Architecture
+              Comacks System
             </span>
           </motion.div>
 
@@ -50,7 +50,7 @@ export function PipelineModel() {
             transition={{ delay: 0.1 }}
             className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tighter mb-6 text-white"
           >
-            The <span className="font-bold text-white md:text-5xl lg:text-6xl"><span className="text-red-500">C</span>oma<span className="text-red-500">c</span>ks</span> Pipeline.
+            Patient Follow-up System.
           </motion.h2>
 
           <motion.p
@@ -60,7 +60,8 @@ export function PipelineModel() {
             transition={{ delay: 0.2 }}
             className="text-lg text-zinc-400 font-light leading-relaxed max-w-2xl mx-auto text-balance"
           >
-            We don't run isolated campaigns. We install a full-funnel operating system that controls your patient flow from first click to final revenue.
+            We don’t just bring enquiries ,we build a system that turns them into OPD visits, procedures, and predictable monthly revenue.
+
           </motion.p>
         </div>
 

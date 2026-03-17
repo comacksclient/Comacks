@@ -16,8 +16,8 @@ export default function DiagnosisPage() {
     treatmentsStarted: 35,
     treatmentsCompleted: 33,
     averageCaseValue: undefined,
-    patientsLastYear: 500,
-    patientsReturned: 200,
+    patientsLastYear: 0,
+    patientsReturned: 0,
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -90,11 +90,14 @@ export default function DiagnosisPage() {
               Clinic Performance Check
             </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
+            {/* FIX: Removed h-full and flex column from form, letting it flow naturally */}
+            <form onSubmit={handleSubmit} className="relative z-10">
 
               {/* Core Funnel Inputs */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="md:col-span-2">
+              <div className="flex flex-col gap-5">
+
+                {/* Currency */}
+                <div>
                   <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Currency</label>
                   <select
                     name="country"
@@ -108,19 +111,20 @@ export default function DiagnosisPage() {
                   </select>
                 </div>
 
-                <InputField label="Patient Enquiries (Per Month)" name="monthlyInquiries" value={formData.monthlyInquiries} onChange={handleInputChange} />
-                <InputField label="Consultations (Per Month)" name="monthlyConsultations" value={formData.monthlyConsultations} onChange={handleInputChange} />
-                <InputField label="Patients Starting Treatment" name="treatmentsStarted" value={formData.treatmentsStarted} onChange={handleInputChange} />
-                <InputField label="Patients Finishing Treatment" name="treatmentsCompleted" value={formData.treatmentsCompleted} onChange={handleInputChange} />
+                <InputField label="Average Patient Enquiries (Per Month)" name="monthlyInquiries" value={formData.monthlyInquiries} onChange={handleInputChange} />
+                <InputField label="Average Consultations (Per Month)" name="monthlyConsultations" value={formData.monthlyConsultations} onChange={handleInputChange} />
+                <InputField label="Average Patients Starting Treatment" name="treatmentsStarted" value={formData.treatmentsStarted} onChange={handleInputChange} />
+                <InputField label="Average Patients Finishing Treatment" name="treatmentsCompleted" value={formData.treatmentsCompleted} onChange={handleInputChange} />
 
-                <div className="md:col-span-2 relative">
+                {/* Average Treatment Value */}
+                <div className="relative">
                   <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Average Treatment Value ({currency})</label>
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 font-mono text-sm">{currency}</span>
                     <input
                       type="number"
                       name="averageCaseValue"
-                      placeholder={currentResult.config.caseValueDefault.toString()}
+                      placeholder={currentResult?.config?.caseValueDefault?.toString() || "0"}
                       value={formData.averageCaseValue || ''}
                       onChange={handleInputChange}
                       className="w-full bg-[#111] border border-white/5 hover:border-white/10 rounded-lg pl-10 pr-4 py-3 text-white outline-none focus:border-red-500/50 focus:bg-[#151515] transition-all font-mono text-sm"
@@ -129,24 +133,19 @@ export default function DiagnosisPage() {
                 </div>
               </div>
 
-              {/* Retention Inputs */}
-              <div className="pt-6 border-t border-white/5 grid grid-cols-1 md:grid-cols-2 gap-5 relative">
-                <InputField label="Total Active Patients (Last Year)" name="patientsLastYear" value={formData.patientsLastYear} onChange={handleInputChange} />
-                <InputField label="Returning Patients (This Year)" name="patientsReturned" value={formData.patientsReturned} onChange={handleInputChange} />
-              </div>
-
+              {/* FIX: Changed mt-auto back to mt-8 so it sits directly under the last input without overflowing */}
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full mt-8 group relative h-14 rounded-lg bg-white text-black hover:bg-zinc-200 transition-all duration-300 flex items-center justify-center gap-3 text-xs tracking-[0.2em] uppercase font-bold disabled:opacity-50 overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)]"
+                className="w-full mt-8 group relative h-14 rounded-lg bg-white text-black hover:bg-zinc-200 transition-all duration-300 flex items-center justify-center gap-3 text-xs tracking-[0.2em] uppercase font-bold disabled:opacity-50 overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)] shrink-0"
               >
                 <span className="z-10 relative">{isLoading ? "Analyzing..." : "Start Practice Audit"}</span>
                 <ArrowRight className="w-4 h-4 z-10 relative group-hover:translate-x-1 transition-transform" />
                 <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-black/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] skew-x-12 z-0"></div>
               </button>
+
             </form>
           </div>
-
           {/* --- CENTER: PIPELINE ARCHITECTURE --- */}
           <div className="lg:col-span-3 flex flex-col items-center justify-center p-6 relative">
             <div className="absolute inset-y-0 left-1/2 w-px bg-gradient-to-b from-white/10 via-red-500/30 to-white/10 -translate-x-1/2 z-0"></div>

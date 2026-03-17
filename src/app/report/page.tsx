@@ -76,13 +76,37 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
 
   const currency = COUNTRY_CONFIGS[input!.country.toLowerCase()]?.currency || "$";
 
-  // System recommendations (Simplified)
+
   const systems = [];
-  if (computedResult.rates.consultRate < GLOBAL_TARGETS.consultTarget.min) systems.push({ name: "Patient Attraction", desc: "High inquiry drop-off detected. Implementation of AI-assisted booking and optimized staff follow-up protocols recommended." });
-  if (computedResult.rates.treatmentRate < GLOBAL_TARGETS.treatmentTarget.min) systems.push({ name: "Case Acceptance", desc: "Consultation-to-treatment conversions are below target. Patient education frameworks and structured communication protocols needed." });
-  if (computedResult.rates.completionRate < GLOBAL_TARGETS.completionTarget.min) systems.push({ name: "Treatment Adherence", desc: "Patient dropout during active treatment detected. Automated adherence sequences and flexible financial integrations required." });
-  if (computedResult.rates.recallRate < GLOBAL_TARGETS.recallTarget.min) systems.push({ name: "Patient Reactivation", desc: "Significant loss of past patients. Implementation of automated, personalized recall campaigns via SMS and Email recommended." });
-  systems.push({ name: "Practice Command Center", desc: "Real-time foundational dashboard to track overall practice health and patient flow metrics." });
+
+  if (computedResult.rates.consultRate < GLOBAL_TARGETS.consultTarget.min)
+    systems.push({
+      name: "Getting More Patients to Book",
+      desc: "Many people are enquiring but not booking appointments. We help you respond faster and guide them to book easily."
+    });
+
+  if (computedResult.rates.treatmentRate < GLOBAL_TARGETS.treatmentTarget.min)
+    systems.push({
+      name: "Turning Visits into Treatments",
+      desc: "Patients are visiting but not going ahead with treatment. We help them understand and feel confident to say yes."
+    });
+
+  if (computedResult.rates.completionRate < GLOBAL_TARGETS.completionTarget.min)
+    systems.push({
+      name: "Completing Treatments",
+      desc: "Some patients are not finishing their treatment. We help you keep them on track until completion."
+    });
+
+  if (computedResult.rates.recallRate < GLOBAL_TARGETS.recallTarget.min)
+    systems.push({
+      name: "Bringing Patients Back",
+      desc: "Many past patients are not returning. We help remind and reconnect with them for checkups and further care."
+    });
+
+  systems.push({
+    name: "Clinic Growth Overview",
+    desc: "A simple view to help you understand how your clinic is performing and where you can improve."
+  });
 
   return (
     <div className="min-h-screen bg-[#050505] text-zinc-200 font-sans pb-20 selection:bg-red-900/30">
@@ -135,7 +159,9 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
               <h3 className="text-red-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-4 relative z-10 flex items-center justify-center gap-2">
                 <AlertTriangle className="w-4 h-4" /> Revenue Opportunity Detected
               </h3>
-              <div className="text-4xl sm:text-6xl font-mono font-black text-red-500 mb-4 relative z-10">{currency} {Math.round(computedResult.revenue.recoveryMax).toLocaleString()} <span className="text-xl sm:text-2xl text-red-500/50">/mo</span></div>
+              <div className="text-4xl sm:text-6xl font-mono font-black text-red-500 mb-4 relative z-10 leading-tight">
+                {currency} {Math.round(computedResult.revenue.recoveryMax).toLocaleString()} <span className="text-xl sm:text-2xl text-red-500/50">/mo</span>
+              </div>
               <div className="text-red-400/80 font-mono text-[10px] sm:text-sm relative z-10 bg-red-500/10 inline-block px-4 py-2 rounded-md border border-red-500/20 print:bg-red-50 print:border-red-100 italic sm:not-italic">Potential Annual Growth: {currency} {Math.round(computedResult.revenue.recoveryMax * 12).toLocaleString()}</div>
             </div>
           </div>
@@ -158,11 +184,11 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
                 { label: "Treatments Completed", val: input.treatments_completed },
               ].map((step, idx) => (
                 <div key={idx} className="relative z-10 flex flex-col items-center">
-                  <div className="w-full bg-[#111] border border-white/10 p-6 rounded-xl flex justify-between items-center shadow-xl print:bg-zinc-50 print:border-zinc-200 print:shadow-none">
+                  <div className="w-full bg-[#111] border border-white/10 p-5 rounded-xl flex justify-between items-center shadow-xl print:bg-zinc-50 print:border-zinc-200 print:shadow-none">
                     <span className="text-xs uppercase tracking-widest font-bold text-zinc-400 print:text-zinc-600">{step.label}</span>
-                    <span className="font-mono font-bold text-3xl text-white print:text-black">{step.val}</span>
+                    <span className="font-mono font-bold text-2xl text-white print:text-black">{step.val}</span>
                   </div>
-                  {idx < 3 && <div className="h-8 w-px bg-red-500/50 my-2" />}
+                  {idx < 3 && <div className="h-6 w-px bg-red-500/50 my-2" />}
                 </div>
               ))}
             </div>
@@ -177,25 +203,30 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
 
           <div className="flex-1 flex flex-col justify-center gap-6 mt-12">
             <div className="grid grid-cols-2 gap-px bg-white/5 border border-white/5 rounded-2xl overflow-hidden print:border-zinc-200 print:bg-zinc-100">
-              <div className="bg-[#080808] p-8 print:bg-white">
+              <div className="bg-[#080808] p-6 print:bg-white">
                 <h4 className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-4">New Patient Loss</h4>
                 <p className="text-zinc-400 text-xs mb-6 leading-relaxed">Inquiries lost before booking consultations.</p>
-                <div className="text-3xl font-mono text-red-500">-{computedResult.leaks.leadLeak}</div>
+                <div className="text-2xl font-mono text-red-500">-{computedResult.leaks.leadLeak}</div>
               </div>
-              <div className="bg-[#080808] p-8 print:bg-white">
+              <div className="bg-[#080808] p-6 print:bg-white">
                 <h4 className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-4">Consultation Gaps</h4>
                 <p className="text-zinc-400 text-xs mb-6 leading-relaxed">Consultations not moving forward to treatment.</p>
-                <div className="text-3xl font-mono text-red-500">-{computedResult.leaks.conversionLeak}</div>
+                <div className="text-2xl font-mono text-red-500">-{computedResult.leaks.conversionLeak}</div>
               </div>
-              <div className="bg-[#080808] p-8 print:bg-white">
+              <div className="bg-[#080808] p-6 print:bg-white">
                 <h4 className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-4">Incomplete Treatment</h4>
                 <p className="text-zinc-400 text-xs mb-6 leading-relaxed">Patients starting but not completing active care.</p>
-                <div className="text-3xl font-mono text-red-500">-{computedResult.leaks.completionLeak}</div>
+                <div className="text-2xl font-mono text-red-500">-{computedResult.leaks.completionLeak}</div>
               </div>
-              <div className="bg-[#080808] p-8 print:bg-white">
-                <h4 className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-4">Inactive Patients</h4>
-                <p className="text-zinc-400 text-xs mb-6 leading-relaxed">Past patients who haven't returned this year.</p>
-                <div className="text-3xl font-mono text-red-500">-{computedResult.leaks.recallLeak}</div>
+              <div className="bg-[#080808] p-6 print:bg-white flex flex-col justify-between">
+                <div>
+                  <h4 className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-4">Inactive Patients (Annual)</h4>
+                  <p className="text-zinc-400 text-xs mb-6 leading-relaxed text-balance">Past patients who haven't returned this year.</p>
+                </div>
+                <div>
+                  <div className="text-2xl font-mono text-red-500 mb-2">-{computedResult.leaks.recallLeak}</div>
+                  <p className="text-[9px] text-zinc-500 italic print:text-zinc-400">*Projected value based on current clinical throughput volume.</p>
+                </div>
               </div>
             </div>
 
@@ -369,37 +400,79 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
       <style dangerouslySetInnerHTML={{
         __html: `
         @media print {
-          @page { margin: 0; size: A4 portrait; }
+          /* ===== PAGE SETUP ===== */
+          @page { 
+            margin: 0; 
+            size: A4 portrait; 
+          }
+
+          /* ===== FORCE DESKTOP LAYOUT ON MOBILE ===== */
           html, body { 
             background: white !important; 
             color: black !important;
-            -webkit-print-color-adjust: exact; 
-            print-color-adjust: exact; 
+            -webkit-print-color-adjust: exact !important; 
+            print-color-adjust: exact !important;
+            width: 210mm !important;
+            min-width: 210mm !important;
+            max-width: 210mm !important;
+            font-size: 12px !important;
           }
-          .page-break-after { break-after: page; }
-          /* Reset common background colors for print */
-          .bg-\\[\\#050505\\], .bg-\\[\\#080808\\], .bg-\\[\\#111\\], .bg-\\[\\#0a0a0a\\], .bg-\\[\\#110505\\] {
-            background: white !important;
+
+          /* ===== EACH SECTION = EXACTLY ONE A4 PAGE ===== */
+          .page-break-after {
+            break-after: page !important;
+            page-break-after: always !important;
+            height: 297mm !important;
+            min-height: unset !important;
+            max-height: 297mm !important;
+            overflow: hidden !important;
+            box-sizing: border-box !important;
           }
-          /* Fix text colors */
-          .text-zinc-200, .text-zinc-400, .text-zinc-500, .text-zinc-600, .text-white {
-            color: #333 !important;
+
+          /* Last page has no break */
+          .page-break-after:last-of-type {
+            break-after: avoid !important;
+            page-break-after: avoid !important;
+            height: 297mm !important;
           }
-          .text-red-500 {
-            color: #ef4444 !important;
+
+          /* ===== RESET DARK BACKGROUNDS ===== */
+          .bg-\\[\\#050505\\], .bg-\\[\\#080808\\], .bg-\\[\\#111\\], .bg-\\[\\#0a0a0a\\], .bg-\\[\\#110505\\],
+          .bg-\\[\\#080808\\]\\/90, [class*="bg-zinc-9"], [class*="bg-black"] {
+            background-color: white !important;
           }
-          /* Custom overrides for specific components to ensure white background */
-          .print\\:bg-white { background: white !important; }
-          .print\\:bg-zinc-50 { background: #f9fafb !important; }
-          .print\\:text-black { color: black !important; }
-          .print\\:border-zinc-200 { border-color: #e5e7eb !important; }
+
+          /* ===== TEXT COLORS ===== */
+          .text-white, .text-zinc-100, .text-zinc-200 { color: #111 !important; }
+          .text-zinc-300, .text-zinc-400 { color: #555 !important; }
+          .text-zinc-500, .text-zinc-600 { color: #888 !important; }
+          .text-red-500 { color: #dc2626 !important; }
+          .text-red-400 { color: #ef4444 !important; }
+          .text-emerald-400 { color: #059669 !important; }
+
+          /* ===== BORDERS ===== */
+          .border-white\\/5, .border-white\\/10, .border-white\\/20 { border-color: #e5e7eb !important; }
           
-          /* Force backgrounds to be white unless explicitly set to zinc-50 etc */
+          /* ===== TAILWIND PRINT: UTILITIES ENFORCEMENT ===== */
+          .print\\:bg-white { background-color: white !important; }
+          .print\\:bg-zinc-50 { background-color: #f9fafb !important; }
+          .print\\:text-black { color: #000 !important; }
+          .print\\:text-zinc-800 { color: #1f2937 !important; }
+          .print\\:border-zinc-200 { border-color: #e5e7eb !important; }
+          .print\\:border-zinc-300 { border-color: #d1d5db !important; }
+          .print\\:hidden { display: none !important; }
+          .print\\:flex-row { flex-direction: row !important; }
+          .print\\:p-12 { padding: 3rem !important; }
+          .print\\:p-8 { padding: 2rem !important; }
+
+          /* ===== STRIP DECORATIVE EFFECTS ===== */
           * {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
             text-shadow: none !important;
             box-shadow: none !important;
+            animation: none !important;
+            transition: none !important;
           }
         }
       `}} />
