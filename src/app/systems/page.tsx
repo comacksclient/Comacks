@@ -4,7 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Layers, Network, Database, Workflow, ShieldCheck, Terminal, Cpu, Plus } from "lucide-react";
 
-// --- SYSTEM ARCHITECTURE DATA ---
+
 const SYSTEMS_DATA = [
   {
     id: "SYS-01",
@@ -71,7 +71,7 @@ export default function SystemsPage() {
           >
             <Cpu className="w-3.5 h-3.5 text-red-500" />
             <span className="text-[10px] uppercase tracking-[0.2em] text-red-400 font-bold">
-              Core Infrastructure
+              Structure
             </span>
           </motion.div>
 
@@ -81,7 +81,7 @@ export default function SystemsPage() {
             transition={{ delay: 0.1 }}
             className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tighter mb-6 text-white"
           >
-            Architectural <span className="text-red-500">C</span>oma<span className="text-red-500">c</span>ks <span className="text-zinc-600">Systems.</span>
+            <span className="text-red-500">C</span>oma<span className="text-red-500">c</span>ks <span className="text-zinc-600">Systems.</span>
           </motion.h1>
 
           <motion.p
@@ -90,7 +90,7 @@ export default function SystemsPage() {
             transition={{ delay: 0.2 }}
             className="text-lg text-zinc-400 font-light max-w-2xl mx-auto leading-relaxed text-balance"
           >
-            We don't offer generic marketing packages. We deploy specific infrastructure layers determined entirely by the leaks identified in your clinic diagnosis.
+            We don’t offer generic marketing ,we fix what’s missing in your clinic and build a system that brings real patients.
           </motion.p>
         </div>
 

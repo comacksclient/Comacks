@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { calculateDiagnosis, COUNTRY_CONFIGS, DiagnosisInput, GLOBAL_TARGETS } from "@/lib/diagnosisEngine";
-import { Lock, FileText, ArrowRight, X, Calendar, PhoneMissed, Handshake, Stethoscope, Rewind, Terminal, Activity, AlertTriangle, ShieldCheck, Cpu, Zap, MoveDown, MoveUp, ScanLine } from "lucide-react";
+import { Lock, FileText, ArrowRight, X, Calendar, PhoneMissed, Share2, Terminal, Activity, AlertTriangle, ShieldCheck, Cpu, Zap, MoveDown, MoveUp, ScanLine } from "lucide-react";
 import Link from "next/link";
 
 export default function ResultDashboard() {
@@ -18,6 +18,7 @@ export default function ResultDashboard() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showUnlockModal, setShowUnlockModal] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const raw = localStorage.getItem('comacks_diagnosis_data');
@@ -91,6 +92,7 @@ export default function ResultDashboard() {
 
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
+          {/* Left Side: Title */}
           <div>
             <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full border border-red-500/20 bg-red-500/10 backdrop-blur-md">
               <Terminal className="w-3.5 h-3.5 text-red-500" />
@@ -102,21 +104,46 @@ export default function ResultDashboard() {
               Clinic <span className="text-zinc-600">Analysis.</span>
             </h1>
           </div>
-          <div className="flex flex-col items-end gap-3">
-            <div className="text-right flex flex-col items-end">
+
+          {/* Right Side (Desktop) / Bottom Left (Mobile): Controls */}
+          {/* Changed to items-start on mobile so the button aligns left, items-end on desktop */}
+          <div className="flex flex-col items-start md:items-end gap-4 mt-2 md:mt-0">
+
+            <div className="text-left md:text-right flex flex-col items-start md:items-end">
               <div className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold mb-1">Report ID</div>
               <div className="font-mono text-zinc-300 bg-white/5 px-3 py-1 rounded-md border border-white/10">{reportId}</div>
             </div>
-            <button
-              onClick={() => isUnlocked ? window.open(`/report?id=${reportId}`, '_blank') : setShowUnlockModal(true)}
-              className="px-4 py-2 mt-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-[10px] tracking-widest uppercase font-bold flex items-center gap-2 transition-colors shadow-[0_0_15px_rgba(239,68,68,0.2)]"
-            >
-              <FileText className="w-3.5 h-3.5" />
-              {isUnlocked ? "View PDF Report" : "Download PDF Report"}
-            </button>
+
+            <div className="flex flex-wrap items-center gap-3">
+              {/* NEW: Schedule Call Button with Live Indicator */}
+              <button
+                onClick={() => window.open('https://calendly.com/03arpit04', '_blank')}
+                className="group relative px-4 py-2 rounded-lg bg-white/[0.02] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] transition-all duration-300 flex items-center gap-2 text-[10px] tracking-[0.1em] uppercase font-bold text-zinc-300 hover:text-white overflow-hidden shadow-[0_5px_15px_rgba(0,0,0,0.2)]"
+              >
+                {/* Hover Shimmer Sweep */}
+                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite] skew-x-12 pointer-events-none"></div>
+
+                <Calendar className="w-3.5 h-3.5 relative z-10 text-zinc-400 group-hover:text-white transition-colors" />
+                <span className="relative z-10">Schedule Call</span>
+
+                {/* Live Status Dot */}
+                <div className="relative z-10 flex items-center gap-1.5 ml-1 pl-2 border-l border-white/10 group-hover:border-white/20 transition-colors">
+                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+                </div>
+              </button>
+
+              {/* ORIGINAL: PDF Download Button */}
+              <button
+                onClick={() => isUnlocked ? window.open(`/report?id=${reportId}`, '_blank') : setShowUnlockModal(true)}
+                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-[10px] tracking-widest uppercase font-bold flex items-center gap-2 transition-colors shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                {isUnlocked ? "View PDF Report" : "Download PDF Report"}
+              </button>
+            </div>
+
           </div>
         </motion.div>
-
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
 
@@ -136,6 +163,25 @@ export default function ResultDashboard() {
             <p className="text-lg md:text-xl text-zinc-300 font-light max-w-2xl text-balance">
               {result.scoreText}
             </p>
+
+            <div className="mt-8 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center gap-4">
+              <p className="text-xs text-zinc-500 italic text-balance">
+                Compare your clinic with others and review the report with your team.
+              </p>
+              <button
+                onClick={() => {
+                  const shareUrl = `${window.location.origin}/report?id=${reportId}`;
+                  navigator.clipboard.writeText(shareUrl).then(() => {
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  });
+                }}
+                className="shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-[10px] uppercase tracking-widest font-bold text-zinc-300"
+              >
+                <Share2 className="w-3.5 h-3.5" />
+                {copied ? 'Copied!' : 'Share Report'}
+              </button>
+            </div>
 
           </motion.div>
         </div>
@@ -216,7 +262,12 @@ export default function ResultDashboard() {
               { title: "New Patient Loss", val: result.leaks.leadLeak, reason: "inquiries lost before booking consultations" },
               { title: "Consultation Gaps", val: result.leaks.conversionLeak, reason: "consultations not moving forward to treatment" },
               { title: "Incomplete Treatment", val: result.leaks.completionLeak, reason: "patients starting but not completing active care" },
-              { title: "Inactive Patients", val: result.leaks.recallLeak, reason: "past patients who haven't returned this year" },
+              {
+                title: "Inactive Patients (Annual)",
+                val: result.leaks.recallLeak,
+                reason: "past patients who haven't returned this year",
+                isEstimated: true
+              },
             ].map((l, idx) => {
               const isLeak = l.val > 0;
               return (
@@ -228,6 +279,11 @@ export default function ResultDashboard() {
                   <div className="relative z-10">
                     <div className="text-4xl font-mono font-medium text-red-500 mb-2">{l.val}</div>
                     <div className="text-[10px] text-zinc-400 leading-relaxed uppercase tracking-widest">{l.reason}</div>
+                    {"isEstimated" in l && (
+                      <div className="mt-4 pt-4 border-t border-white/5 text-[9px] text-zinc-500 italic leading-snug">
+                        *Projected value based on current clinical throughput volume.
+                      </div>
+                    )}
                   </div>
                 </div>
               );
@@ -280,20 +336,57 @@ export default function ResultDashboard() {
         </motion.div>
 
         {/* --- ACTION BUTTONS --- */}
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col md:flex-row gap-4 items-center justify-center p-8 md:p-12 border border-white/10 rounded-3xl bg-[#080808]/90 backdrop-blur-xl mt-12 relative overflow-hidden">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center p-8 md:p-12 border border-white/10 rounded-3xl bg-[#080808]/90 backdrop-blur-xl mt-12 relative overflow-hidden text-center">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_0,transparent_50%)]" />
 
-          <Link href="/contact" className="w-full md:w-auto relative z-10">
-            <button className="w-full px-8 py-4 rounded-xl bg-red-600 border border-red-500 text-white text-xs tracking-[0.1em] uppercase font-bold flex items-center justify-center gap-3 hover:bg-red-700 transition-colors shadow-[0_0_30px_rgba(239,68,68,0.3)]">
-              <PhoneMissed className="w-4 h-4" /> Contact
+
+          <p className="text-md text-zinc-400 font-light mb-8 max-w-xl mx-auto relative z-10 text-balance">
+            Your growth roadmap is ready. The next step is a simple strategy call with our growth team.
+          </p>
+
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-center w-full relative z-10">
+            <button
+              onClick={() => window.open('https://calendly.com/03arpit04', '_blank')}
+              className="group relative w-full md:w-auto h-14 px-8 rounded-xl bg-white/[0.02] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] transition-all duration-300 flex items-center justify-center gap-3 text-xs tracking-[0.1em] uppercase font-bold text-zinc-400 hover:text-white shadow-[0_5px_20px_rgba(0,0,0,0.3)] overflow-hidden z-10"
+            >
+
+              <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite] skew-x-12 pointer-events-none"></div>
+
+              {/* Calendar Icon */}
+              <Calendar className="w-4 h-4 text-zinc-500 group-hover:text-white transition-colors relative z-10" />
+
+              {/* Main Text */}
+              <span className="relative z-10">Schedule a Call</span>
+
+              {/* Live Availability Indicator (Psychological Trigger) */}
+              <div className="relative z-10 flex items-center gap-1.5 ml-1 pl-4 border-l border-white/10 group-hover:border-white/20 transition-colors">
+                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+                <span className="text-[9px] font-mono text-zinc-500 group-hover:text-emerald-400 transition-colors">Online</span>
+              </div>
             </button>
-          </Link>
-          <button onClick={() => isUnlocked ? window.open(`/report?id=${reportId}`, '_blank') : setShowUnlockModal(true)} className="w-full md:w-auto px-8 py-4 rounded-xl bg-[#111] border border-white/10 text-white text-xs tracking-[0.1em] uppercase font-bold flex items-center justify-center gap-3 hover:bg-white/5 transition-colors relative z-10">
-            <FileText className="w-4 h-4" /> {isUnlocked ? "View PDF Report" : "Download PDF Report"}
-          </button>
-          <button onClick={() => window.open('https://calendly.com/03arpit04', '_blank')} className="w-full md:w-auto px-8 py-4 rounded-xl bg-transparent border border-white/10 text-zinc-400 hover:text-white text-xs tracking-[0.1em] uppercase font-bold flex items-center justify-center gap-3 hover:bg-white/5 transition-colors relative z-10">
-            <Calendar className="w-4 h-4" /> Schedule a Call
-          </button>
+
+            <button onClick={() => isUnlocked ? window.open(`/report?id=${reportId}`, '_blank') : setShowUnlockModal(true)} className="w-full md:w-auto px-8 py-4 rounded-xl bg-[#111] border border-white/10 text-white text-xs tracking-[0.1em] uppercase font-bold flex items-center justify-center gap-3 hover:bg-white/5 transition-colors relative z-10">
+              <FileText className="w-4 h-4" /> {isUnlocked ? "View PDF Report" : "Download PDF Report"}
+            </button>
+            <Link href="/contact" className="w-full md:w-auto relative z-10">
+              <button className="w-full px-8 py-4 rounded-xl bg-red-600 border border-red-500 text-white text-xs tracking-[0.1em] uppercase font-bold flex items-center justify-center gap-3 hover:bg-red-700 transition-colors shadow-[0_0_30px_rgba(239,68,68,0.3)]">
+                <PhoneMissed className="w-4 h-4" /> Contact
+              </button>
+            </Link>
+            <button
+              onClick={() => {
+                const shareUrl = `${window.location.origin}/report?id=${reportId}`;
+                navigator.clipboard.writeText(shareUrl).then(() => {
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                });
+              }}
+              className="w-full md:w-auto px-8 py-4 rounded-xl bg-white/5 border border-white/10 text-white text-xs tracking-[0.1em] uppercase font-bold flex items-center justify-center gap-3 hover:bg-white/10 transition-colors relative z-10"
+            >
+              <Share2 className="w-4 h-4" />
+              {copied ? 'Link Copied!' : 'Share Report'}
+            </button>
+          </div>
         </motion.div>
 
         <div className="mt-8 text-center text-[10px] uppercase tracking-[0.3em] text-zinc-600 font-bold">
@@ -326,32 +419,22 @@ export default function ResultDashboard() {
 
             <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full border border-red-500/20 bg-red-500/10">
               <Lock className="w-3.5 h-3.5 text-red-500" />
-              <span className="text-[10px] uppercase tracking-[0.2em] text-red-400 font-bold">Secure Access</span>
+              <span className="text-[10px] uppercase tracking-[0.2em] text-red-400 font-bold">Secure </span>
             </div>
             <h2 className="text-2xl md:text-3xl font-medium text-white mb-3 tracking-tighter">Access Full Growth Report.</h2>
             <p className="text-zinc-400 mb-8 text-sm leading-relaxed font-light">
-              The Comacks system has designed a 6-page growth plan for your clinic. Enter your details below to access the full PDF dossier.
+              The Comacks system has designed a 6-page growth plan for your clinic. Enter your details below to access the full PDF report.
             </p>
 
             <form onSubmit={handleUnlock} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1.5">Full Name</label>
-                  <input required type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full bg-[#111] border border-white/5 hover:border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-red-500/50 transition-all font-mono text-sm" />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1.5">Phone Number</label>
-                  <input required type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="w-full bg-[#111] border border-white/5 hover:border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-red-500/50 transition-all font-mono text-sm" />
-                </div>
-              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1.5">Clinic Name</label>
                   <input required type="text" value={form.clinic_name} onChange={(e) => setForm({ ...form, clinic_name: e.target.value })} className="w-full bg-[#111] border border-white/5 hover:border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-red-500/50 transition-all font-mono text-sm" />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1.5">City</label>
-                  <input required type="text" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="w-full bg-[#111] border border-white/5 hover:border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-red-500/50 transition-all font-mono text-sm" />
+                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1.5">Phone Number</label>
+                  <input required type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="w-full bg-[#111] border border-white/5 hover:border-white/10 rounded-lg px-4 py-3 text-white outline-none focus:border-red-500/50 transition-all font-mono text-sm" />
                 </div>
               </div>
               <div>

@@ -57,29 +57,35 @@ export function calculateDiagnosis(input: DiagnosisInput) {
   const caseValue = input.averageCaseValue || config.caseValueDefault;
 
   // Actual Rates
+  // Estimate retention metrics if not provided (Dynamic Scaling)
+  let patientsLastYear = input.patientsLastYear;
+  let patientsReturned = input.patientsReturned;
+  
+  if (patientsLastYear === 0) {
+    // Heuristic: Active base is roughly 15x-20x the monthly completions (1.5 year window)
+    patientsLastYear = input.treatmentsCompleted * 18;
+    // Industry average return rate (estimated lower for growth gap identification)
+    patientsReturned = Math.round(patientsLastYear * 0.32);
+  }
+
   const consultRate = input.monthlyInquiries > 0 ? input.monthlyConsultations / input.monthlyInquiries : 0;
   const treatmentRate = input.monthlyConsultations > 0 ? input.treatmentsStarted / input.monthlyConsultations : 0;
   const completionRate = input.treatmentsStarted > 0 ? input.treatmentsCompleted / input.treatmentsStarted : 0;
-  const recallRate = input.patientsLastYear > 0 ? input.patientsReturned / input.patientsLastYear : 0;
+  const recallRate = patientsLastYear > 0 ? patientsReturned / patientsLastYear : 0;
 
   // Expected Pipeline (Using minimum thresholds for conservative calculations)
   const expectedConsult = input.monthlyInquiries * GLOBAL_TARGETS.consultTarget.min;
   const expectedTreatment = input.monthlyConsultations * GLOBAL_TARGETS.treatmentTarget.min;
   const expectedCompletion = input.treatmentsStarted * GLOBAL_TARGETS.completionTarget.min;
-  const expectedRecall = input.patientsLastYear * GLOBAL_TARGETS.recallTarget.min;
+  const expectedRecall = patientsLastYear * GLOBAL_TARGETS.recallTarget.min;
 
   // Exact patient drop-offs (Leaks)
   const leadLeak = Math.max(0, input.monthlyInquiries - input.monthlyConsultations);
   const conversionLeak = Math.max(0, input.monthlyConsultations - input.treatmentsStarted);
   const completionLeak = Math.max(0, input.treatmentsStarted - input.treatmentsCompleted);
-  const recallLeak = Math.max(0, input.patientsLastYear - input.patientsReturned); // Approximate
-
-  const lostPatients = leadLeak + conversionLeak + completionLeak + recallLeak;
-
-  // Revenue 
-  const currentRevenue = input.treatmentsCompleted * caseValue;
-  const monthlyLoss = leadLeak * caseValue + conversionLeak * caseValue + completionLeak * caseValue + recallLeak * caseValue; // Simple additive for now
-  const annualLoss = monthlyLoss * 12;
+  const recallLeakAnnual = Math.max(0, patientsLastYear - patientsReturned); // Approximate annual
+  const recallLeakMonthly = Math.round(recallLeakAnnual / 12);
+  const lostPatients = Math.round(leadLeak + conversionLeak + completionLeak + recallLeakMonthly); // All raw lost patients 
 
   // Potential Revenue (Expected path based on target ranges)
   const potentialCompletedMin = Math.max(input.treatmentsCompleted, input.monthlyInquiries * 
@@ -92,18 +98,28 @@ export function calculateDiagnosis(input: DiagnosisInput) {
     GLOBAL_TARGETS.treatmentTarget.max * 
     GLOBAL_TARGETS.completionTarget.max);
     
+  const currentRevenue = input.treatmentsCompleted * caseValue;
   const potentialRevenueMin = Math.round(potentialCompletedMin * caseValue);
   const potentialRevenueMax = Math.round(potentialCompletedMax * caseValue);
   const recoveryMin = Math.max(0, potentialRevenueMin - currentRevenue);
   const recoveryMax = Math.max(0, potentialRevenueMax - currentRevenue);
 
-  // Score (0-100)
-  let rawScore = (
-    (Math.min(1, consultRate / GLOBAL_TARGETS.consultTarget.min)) +
-    (Math.min(1, treatmentRate / GLOBAL_TARGETS.treatmentTarget.min)) +
-    (Math.min(1, completionRate / GLOBAL_TARGETS.completionTarget.min)) +
-    (Math.min(1, recallRate / GLOBAL_TARGETS.recallTarget.min))
-  ) / 4 * 100;
+  // Recall Recovery
+  const recallRecoveryMin = Math.max(0, (input.patientsLastYear * GLOBAL_TARGETS.recallTarget.min) - input.patientsReturned) * caseValue;
+  const recallRecoveryMax = Math.max(0, (input.patientsLastYear * GLOBAL_TARGETS.recallTarget.max) - input.patientsReturned) * caseValue;
+
+  // Use the realistic recovery minimums as the definitive "Loss" (Capital left on the table below benchmarks)
+  const monthlyLoss = Math.round(recoveryMin + (recallRecoveryMin / 12));
+  const annualLoss = monthlyLoss * 12;
+
+  // Score (0-100) - Weighted strongly by total funnel efficiency to stop high bottom-funnel rates from masking top-funnel completely
+  const coreFunnelTarget = GLOBAL_TARGETS.consultTarget.min * GLOBAL_TARGETS.treatmentTarget.min * GLOBAL_TARGETS.completionTarget.min;
+  const coreFunnelActual = input.monthlyInquiries > 0 ? input.treatmentsCompleted / input.monthlyInquiries : 0;
+  
+  const funnelScorePercentage = Math.min(1, coreFunnelActual / coreFunnelTarget);
+  const recallScorePercentage = Math.min(1, recallRate / GLOBAL_TARGETS.recallTarget.min);
+
+  let rawScore = (funnelScorePercentage * 70) + (recallScorePercentage * 30);
   
   const score = Math.max(0, Math.min(100, Math.round(rawScore)));
   const scoreText = getStatusText(score);
@@ -129,7 +145,7 @@ export function calculateDiagnosis(input: DiagnosisInput) {
     caseValue,
     rates: { consultRate, treatmentRate, completionRate, recallRate },
     severities,
-    leaks: { leadLeak, conversionLeak, completionLeak, recallLeak },
+    leaks: { leadLeak, conversionLeak, completionLeak, recallLeak: recallLeakAnnual },
     lostPatients,
     revenue: { currentRevenue, monthlyLoss, annualLoss, potentialRevenueMin, potentialRevenueMax, recoveryMin, recoveryMax },
     score,

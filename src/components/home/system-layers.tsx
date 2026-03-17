@@ -4,36 +4,36 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Radar, HeartHandshake, ShieldCheck, Repeat, Activity, Cpu, Layers } from "lucide-react";
 
-// --- CLINIC-OPTIMIZED SYSTEM LAYERS ---
+
 const SYSTEM_LAYERS = [
   {
     id: "L-01",
-    title: "Awareness & Intake Layer",
-    desc: "Engineered for practices suffering from low local visibility. We build the infrastructure to predictably attract and schedule high-intent patients.",
+    title: "Get More Patients",
+    desc: "We help people in your area find your clinic and easily reach out or book an appointment.",
     icon: Radar
   },
   {
     id: "L-02",
-    title: "Case Acceptance Protocol",
-    desc: "Designed to eliminate hesitation. We install systems that educate and guide patients, turning initial consultations into fully accepted treatment plans.",
+    title: "Turn Visits into Treatments",
+    desc: "We guide patients so they feel confident and say yes to the treatment they need.",
     icon: HeartHandshake
   },
   {
     id: "L-03",
-    title: "Care Continuity Layer",
-    desc: "Prevents patients from abandoning multi-stage procedures. This secures optimal clinical outcomes while protecting your back-end production.",
+    title: "Keep Patients on Track",
+    desc: "We make sure patients don’t drop off and complete their full treatment plan.",
     icon: ShieldCheck
   },
   {
     id: "L-04",
-    title: "Patient Retention Engine",
-    desc: "An automated mining operation that brings dormant past patients back into the chair for routine checkups and proactive new care.",
+    title: "Bring Patients Back",
+    desc: "We reconnect with past patients and remind them to return for checkups or more care.",
     icon: Repeat
   },
   {
     id: "L-05",
-    title: "Practice Telemetry Dashboard",
-    desc: "Provides absolute clarity over your entire clinic's performance, completely removing guesswork from your growth strategy.",
+    title: "Know How Your Clinic is Growing",
+    desc: "You can clearly see what’s working in your clinic without confusion or guesswork.",
     icon: Activity
   },
 ];
@@ -60,7 +60,7 @@ export function SystemLayers() {
           >
             <Layers className="w-3.5 h-3.5 text-red-500" />
             <span className="text-[10px] uppercase tracking-[0.2em] text-red-400 font-bold">
-              System Architecture
+              How the System Works
             </span>
           </motion.div>
 
@@ -71,7 +71,7 @@ export function SystemLayers() {
             transition={{ delay: 0.1 }}
             className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tighter mb-6 text-white text-balance"
           >
-            Core Practice <span className="text-zinc-600">Infrastructure.</span>
+            Patient Growth  <span className="text-zinc-600">System.</span>
           </motion.h2>
 
           <motion.p

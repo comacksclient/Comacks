@@ -34,7 +34,7 @@ export function ExpectedGap() {
           >
             <ScanSearch className="w-3.5 h-3.5 text-red-500" />
             <span className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 font-bold">
-              Variance Diagnostics
+              Diagnostics
             </span>
           </motion.div>
 
@@ -55,7 +55,8 @@ export function ExpectedGap() {
             transition={{ delay: 0.2 }}
             className="text-lg text-zinc-400 font-light max-w-2xl mx-auto leading-relaxed"
           >
-            The mathematical gap between our system baseline and your actual rates defines your exact revenue leakage.
+            The difference between ideal conversion rates and your current numbers shows exactly how much revenue you’re losing|
+
           </motion.p>
         </div>
 
