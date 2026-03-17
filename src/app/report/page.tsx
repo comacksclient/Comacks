@@ -2,8 +2,9 @@ export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/prisma";
 import { calculateDiagnosis, COUNTRY_CONFIGS, GLOBAL_TARGETS, DiagnosisInput } from "@/lib/diagnosisEngine";
-import { Activity, Printer, Terminal, ShieldCheck, AlertTriangle, Cpu, ScanLine, Zap } from "lucide-react";
+import { Activity, Printer, Terminal, ShieldCheck, AlertTriangle, Cpu, ScanLine, Zap, MessageCircle } from "lucide-react";
 import { PrintButton } from "./print-button";
+import { ShareReportButton } from "./share-button";
 import Link from "next/link";
 
 export default async function ReportPage(props: { searchParams: Promise<{ id?: string }> }) {
@@ -16,7 +17,7 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
 
   if (id) {
     result = await prisma.diagnosisResult.findUnique({
-      where: { id },
+      where: { input_id: id },
       include: { input: { include: { user: true } } }
     });
     if (result) {
@@ -112,24 +113,29 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
     <div className="min-h-screen bg-[#050505] text-zinc-200 font-sans pb-20 selection:bg-red-900/30">
 
       {/* --- WEB VIEWER TOP BANNER (Hidden on Print) --- */}
-      <div className="container mx-auto max-w-[210mm] mt-28 sticky top-20 z-40 bg-[#0A0A0A]/95 backdrop-blur-xl border border-white/10 text-white py-4 px-6 flex justify-between items-center print:hidden shadow-2xl rounded-t-2xl mb-0">
-        <div className="flex items-center gap-4">
-          <div className="flex gap-1.5 hidden sm:flex">
+      <div className="container mx-auto max-w-[210mm] mt-28 sticky top-20 z-40 bg-[#0A0A0A]/95 backdrop-blur-xl border border-white/10 text-white py-4 px-3 sm:px-6 flex justify-between items-center print:hidden shadow-2xl rounded-t-2xl mb-0 gap-2">
+        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+          <div className="flex gap-1.5 hidden md:flex">
             <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50"></div>
             <div className="w-3 h-3 rounded-full bg-zinc-800 border border-white/10"></div>
             <div className="w-3 h-3 rounded-full bg-zinc-800 border border-white/10"></div>
           </div>
-          <div className="flex items-center gap-2">
-            <Terminal className="w-4 h-4 text-zinc-500 hidden sm:block" />
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <Terminal className="w-4 h-4 text-zinc-500 hidden xs:block" />
             <span className="text-[10px] font-mono font-bold uppercase text-zinc-300 whitespace-nowrap">
               <span className="inline-flex items-center">
-                <span className="text-red-500">C</span>oma<span className="text-red-500">c</span>ks OS
-              </span> // <span className="hidden xs:inline">Secure Document Viewer</span><span className="xs:hidden">Viewer</span>
+                <span className="text-red-500">C</span>oma<span className="text-red-500">c</span>ks <span className="hidden xs:inline">OS</span>
+              </span> <span className="hidden sm:inline">// </span><span className="hidden lg:inline">Secure Document Viewer</span><span className="hidden sm:inline lg:hidden">Viewer</span>
             </span>
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          {!id && <span className="hidden md:inline-block bg-red-500/10 border border-red-500/20 text-red-400 px-3 py-1 rounded text-[10px] uppercase tracking-widest font-bold animate-pulse">Demo Mode</span>}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          {!id && <span className="hidden lg:inline-block bg-red-500/10 border border-red-500/20 text-red-400 px-3 py-1 rounded text-[10px] uppercase tracking-widest font-bold animate-pulse">Demo Mode</span>}
+          <ShareReportButton 
+            score={computedResult.score} 
+            monthlyLoss={computedResult.revenue.monthlyLoss} 
+            currency={currency} 
+          />
           <PrintButton />
         </div>
       </div>
@@ -157,12 +163,14 @@ export default async function ReportPage(props: { searchParams: Promise<{ id?: s
             <div className="w-full bg-[#110505] p-6 sm:p-10 rounded-2xl border border-red-500/20 relative overflow-hidden print:bg-zinc-50 print:border-red-500/30">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(239,68,68,0.1)_0,transparent_60%)] print:hidden" />
               <h3 className="text-red-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-4 relative z-10 flex items-center justify-center gap-2">
-                <AlertTriangle className="w-4 h-4" /> Revenue Opportunity Detected
+                <AlertTriangle className="w-4 h-4" /> Monthly Revenue Leak
               </h3>
-              <div className="text-4xl sm:text-6xl font-mono font-black text-red-500 mb-4 relative z-10 leading-tight">
-                {currency} {Math.round(computedResult.revenue.recoveryMax).toLocaleString()} <span className="text-xl sm:text-2xl text-red-500/50">/mo</span>
+              <div className="text-4xl sm:text-5xl font-mono font-black text-red-500 mb-2 relative z-10 leading-tight flex items-center justify-center gap-2">
+                <span className="text-xl sm:text-2xl text-red-500/60 font-sans tracking-normal font-normal">Up to</span>
+                {currency} {Math.round(computedResult.revenue.monthlyLoss).toLocaleString()}
               </div>
-              <div className="text-red-400/80 font-mono text-[10px] sm:text-sm relative z-10 bg-red-500/10 inline-block px-4 py-2 rounded-md border border-red-500/20 print:bg-red-50 print:border-red-100 italic sm:not-italic">Potential Annual Growth: {currency} {Math.round(computedResult.revenue.recoveryMax * 12).toLocaleString()}</div>
+              <div className="text-xs text-red-500/60 font-medium mb-6 relative z-10">Potential revenue lost in patient flow</div>
+              <div className="text-red-400/80 font-mono text-[10px] sm:text-sm relative z-10 bg-red-500/10 inline-block px-4 py-2 rounded-md border border-red-500/20 print:bg-red-50 print:border-red-100 italic sm:not-italic">Annual Revenue Leak: {currency} {Math.round(computedResult.revenue.annualLoss).toLocaleString()}</div>
             </div>
           </div>
 

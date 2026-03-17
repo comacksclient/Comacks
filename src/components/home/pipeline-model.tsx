@@ -50,7 +50,7 @@ export function PipelineModel() {
             transition={{ delay: 0.1 }}
             className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tighter mb-6 text-white"
           >
-            Patient Follow-up System.
+            The Patient Flow
           </motion.h2>
 
           <motion.p

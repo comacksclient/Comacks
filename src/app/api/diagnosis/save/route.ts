@@ -4,45 +4,52 @@ import { calculateDiagnosis, DiagnosisInput } from '@/lib/diagnosisEngine';
 
 export async function POST(request: Request) {
   try {
-    // Expect body to contain input data AND optionally user lead data
     const body = await request.json();
-    const input: DiagnosisInput = body.input;
-    const userData = body.user; // { name, email, phone, clinic_name, city }
+    const { input: inputData, user: userData, existingInputId } = body;
 
-    if (!input || !input.country) {
+    if (!inputData || !inputData.country) {
       return NextResponse.json({ error: 'Invalid inputs' }, { status: 400 });
     }
 
-    const results = calculateDiagnosis(input);
+    const results = calculateDiagnosis(inputData);
 
-    let savedUser = null;
+    let savedUserId = null;
 
     if (userData && userData.name && userData.clinic_name) {
-      // Create user lead
-      savedUser = await prisma.user.create({
+      const savedUser = await prisma.user.create({
         data: {
           name: userData.name,
           email: userData.email,
           phone: userData.phone,
           clinic_name: userData.clinic_name,
           city: userData.city || '',
-          country: input.country,
+          country: inputData.country,
         }
       });
+      savedUserId = savedUser.id;
     }
 
-    // Attempt to save diagnosis input & results
+    // If we already saved this diagnosis earlier (anonymous save) and now just adding user
+    if (existingInputId && savedUserId) {
+      await prisma.diagnosisInput.update({
+        where: { id: existingInputId },
+        data: { user_id: savedUserId }
+      });
+      return NextResponse.json({ success: true });
+    }
+
+    // Attempt to save new diagnosis input & results
     const savedInput = await prisma.diagnosisInput.create({
       data: {
-        user_id: savedUser?.id || null,
-        country: input.country,
-        monthly_inquiries: input.monthlyInquiries,
-        monthly_consultations: input.monthlyConsultations,
-        treatments_started: input.treatmentsStarted,
-        treatments_completed: input.treatmentsCompleted,
-        average_case_value: input.averageCaseValue || results.caseValue,
-        patients_last_year: input.patientsLastYear,
-        patients_returned: input.patientsReturned,
+        user_id: savedUserId,
+        country: inputData.country,
+        monthly_inquiries: inputData.monthlyInquiries,
+        monthly_consultations: inputData.monthlyConsultations,
+        treatments_started: inputData.treatmentsStarted,
+        treatments_completed: inputData.treatmentsCompleted,
+        average_case_value: inputData.averageCaseValue || results.caseValue,
+        patients_last_year: inputData.patientsLastYear,
+        patients_returned: inputData.patientsReturned,
         result: {
           create: {
             consult_rate: results.rates.consultRate,
@@ -73,8 +80,9 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       data: results,
-      savedId: savedInput.result?.id,
-      userId: savedUser?.id
+      inputId: savedInput.id,
+      resultId: savedInput.result?.id,
+      userId: savedUserId
     });
   } catch (error) {
     console.error('Save error:', error);

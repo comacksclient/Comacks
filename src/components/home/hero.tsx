@@ -52,7 +52,7 @@ export function Hero() {
             on Autopilot
           </h1>
 
-          <p className="text-md md:text-xl text-zinc-400 font-light max-w-3xl mb-10 leading-relaxed pointer-events-auto">
+          <p className="text-lg md:text-2xl text-zinc-400 font-light max-w-3xl mb-10 leading-relaxed pointer-events-auto ml-1">
             <span >Attract. Convert. Retain.</span>
             <br />
 
