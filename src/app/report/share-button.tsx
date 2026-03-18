@@ -11,9 +11,11 @@ interface ShareReportButtonProps {
 export function ShareReportButton({ score, monthlyLoss, currency }: ShareReportButtonProps) {
   const handleShare = () => {
     const shareUrl = window.location.href;
-    const formattedLoss = `${currency}${(monthlyLoss / 100000).toFixed(1)}L`;
+    const formattedLoss = currency === '₹' 
+      ? `${currency}${(monthlyLoss / 100000).toFixed(1)}L` 
+      : `${currency}${Math.round(monthlyLoss).toLocaleString()}`;
 
-    const text = `I just ran a clinic growth diagnosis for my clinic with Comacks and scored ${score}/100! \n\nIt also showed we may be losing around ${formattedLoss}/month in the patient flow.\n\nYou can test your clinic here:\nhttps://comacks.com/diagnosis\n\nCurious what your clinic score would be.\n\nReport: ${shareUrl}`;
+    const text = `I just ran a clinic growth diagnosis for my clinic with Comacks and scored ${score}/100! \n\nIt also showed we may be losing around ${formattedLoss}/month in the patient flow.\n\nYou can test your clinic here:\nhttps://comacks.com/diagnosis\n\nCurious what your clinic score would be.`;
 
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };

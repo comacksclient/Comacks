@@ -10,7 +10,7 @@ export default function DiagnosisPage() {
   const router = useRouter();
 
   const [formData, setFormData] = useState<DiagnosisInput>({
-    country: "India", // Default
+    country: "USA", // Default
     monthlyInquiries: 100,
     monthlyConsultations: 50,
     treatmentsStarted: 35,
@@ -98,7 +98,7 @@ export default function DiagnosisPage() {
 
                 {/* Currency */}
                 <div>
-                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Currency</label>
+                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Country</label>
                   <select
                     name="country"
                     value={formData.country}
