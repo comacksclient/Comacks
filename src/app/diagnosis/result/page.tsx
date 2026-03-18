@@ -194,7 +194,7 @@ export default function ResultDashboard() {
                 className="px-4 py-2 rounded-lg bg-[#111] border border-white/10 hover:bg-white/5 text-white text-[10px] tracking-widest uppercase font-bold flex items-center gap-2 transition-colors shadow-[0_0_15px_rgba(0,0,0,0.5)]"
               >
                 <FileText className="w-3.5 h-3.5" />
-                {isUnlocked ? "View PDF" : "Download PDF"}
+                {isUnlocked ? "View Full Report" : "Download Full Report"}
               </button>
             </div>
 
@@ -264,9 +264,11 @@ export default function ResultDashboard() {
               <button
                 onClick={() => {
                   const shareUrl = `${window.location.origin}/report?id=${dbInputId || reportId}`;
-                  const formattedLoss = `${currency}${(result.revenue.monthlyLoss / 100000).toFixed(1)}L`;
+                  const formattedLoss = currency === '₹'
+                    ? `${currency}${(result.revenue.monthlyLoss / 100000).toFixed(1)}L`
+                    : `${currency}${Math.round(result.revenue.monthlyLoss).toLocaleString()}`;
 
-                  const text = `I just ran a clinic growth diagnosis for my clinic with Comacks and scored ${result.score}/100! \n\nIt also showed we may be losing around ${formattedLoss}/month in the patient flow.\n\nYou can test your clinic here:\nhttps://comacks.com/diagnosis\n\nCurious what your clinic score would be.\n\nReport: ${shareUrl}`;
+                  const text = `I just ran a clinic growth diagnosis for my clinic with Comacks and scored ${result.score}/100! \n\nIt also showed we may be losing around ${formattedLoss}/month in the patient flow.\n\nYou can test your clinic here:\nhttps://comacks.com/diagnosis\n\nCurious what your clinic score would be.`;
 
                   window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
                 }}
@@ -434,8 +436,9 @@ export default function ResultDashboard() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_0,transparent_50%)]" />
 
 
-          <p className="text-md text-zinc-400 font-light mb-8 max-w-xl mx-auto relative z-10 text-balance">
+          <p className="text-md text-zinc-300 font-light mb-8 max-w-xl mx-auto relative z-10 text-balance">
             Your growth roadmap is ready. The next step is a simple strategy call with our growth team.
+            <span className="block text-xs mt-2 text-green-500 font-medium tracking-wide">Download your Full Complete 6-page growth Report Below.</span>
           </p>
 
           <div className="flex flex-col md:flex-row gap-4 items-center justify-center w-full relative z-10 flex-wrap">
@@ -460,7 +463,7 @@ export default function ResultDashboard() {
             </button>
 
             <button onClick={() => isUnlocked ? window.open(`/report?id=${dbInputId || reportId}`, '_blank') : setShowUnlockModal(true)} className="w-full md:w-auto px-8 py-4 rounded-xl bg-[#111] border border-white/10 text-white text-xs tracking-[0.1em] uppercase font-bold flex items-center justify-center gap-3 hover:bg-white/5 transition-colors relative z-10">
-              <FileText className="w-4 h-4" /> {isUnlocked ? "View PDF Report" : "Download PDF Report"}
+              <FileText className="w-4 h-4" /> {isUnlocked ? "View Full Report" : "Download Full Report"}
             </button>
             <Link href="/contact" className="w-full md:w-auto relative z-10">
               <button className="w-full px-8 py-4 rounded-xl bg-white/5 border border-white/10 text-white text-xs tracking-[0.1em] uppercase font-bold flex items-center justify-center gap-3 hover:bg-white/10 transition-colors">
@@ -470,9 +473,11 @@ export default function ResultDashboard() {
             <button
               onClick={() => {
                 const shareUrl = `${window.location.origin}/report?id=${dbInputId || reportId}`;
-                const formattedLoss = `${currency}${(result.revenue.monthlyLoss / 100000).toFixed(1)}L`;
+                const formattedLoss = currency === '₹'
+                  ? `${currency}${(result.revenue.monthlyLoss / 100000).toFixed(1)}L`
+                  : `${currency}${Math.round(result.revenue.monthlyLoss).toLocaleString()}`;
 
-                const text = `I just ran a clinic growth diagnosis for my clinic with Comacks and scored ${result.score}/100! \n\nIt also showed we may be losing around ${formattedLoss}/month in the patient flow.\n\nYou can test your clinic here:\nhttps://comacks.com/diagnosis\n\nCurious what your clinic score would be.\n\nReport: ${shareUrl}`;
+                const text = `I just ran a clinic growth diagnosis for my clinic with Comacks and scored ${result.score}/100! \n\nIt also showed we may be losing around ${formattedLoss}/month in the patient flow.\n\nYou can test your clinic here:\nhttps://comacks.com/diagnosis\n\nCurious what your clinic score would be.`;
 
                 const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
                 window.open(whatsappUrl, '_blank');
